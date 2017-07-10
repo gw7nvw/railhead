@@ -1,0 +1,77 @@
+
+<script> 
+   document.getElementById("page_status").innerHTML = '';
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <%=  link_to  "Sown:", '/seeds', remote: true,  :id => 'seeds', :onclick => "linkHandler('seeds')" %>
+     &nbsp;--&gt;&nbsp;
+     <b><%= @seed.id.to_s %></b>
+     </div>
+   <div id="controls">
+       <% if current_person.is_modifier %>
+            <%=  link_to "Edit", '/seeds/'+@seed.id.to_s+'/edit', class: "btn btn-small btn-primary", remote: true, :id => 'edit', :onclick => "linkHandler('edit')" %>
+       <% end %>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+   <%= render 'flash' %>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Seeds ID:" %></div>
+      <div class="rowtext"><%= @seed.seed_code %></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Collection" %></div>
+      <div class="rowtext"><%= if @seed.collection then link_to @seed.collection.name, '/collections/'+@seed.collection.id.to_s, remote: true, :id => 'collection_link', :onclick => "linkHandler('collection_link')" end %></div>
+
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Species" %></div>
+      <div class="rowtext"><%= if @seed.species then link_to @seed.species.name, '/species/'+@seed.species.id.to_s, remote: true, :id => 'specieslink', :onclick => "linkHandler('specieslink')" end %></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Source" %></div>
+      <div class="rowtext"><%= if @seed.source then link_to @seed.source.name, '/sources/'+@seed.source.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')" end %></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Date Sown" %></div>
+      <div class="rowtext"> <%= @seed.date_sown.strftime('%d/%m/%Y') %>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Number Sown" %></div>
+      <div class="rowtext"> <%= @seed.number_sown %>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Notes" %></div>
+      <div class="rowtext"> <%= @seed.notes %>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Current?" %></div>
+      <div class="textext"><%= if @seed.is_active then "Yes" else "No" end %></div>
+   </div>
+
+   <div class="erow">
+      <div class="hrline">
+         <hr noshade size="4">
+      </div>
+   </div>
+   <div class="erow">
+     <div class="sectiontitle">History:</div>
+     <%=render '/collections/history_tree'%>
+   </div>
+</div>
+
+<script>
+    <% if @seed.collection %> place_init('<%=@seed.collection.location%>', '', 0); <% end %>
+        if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

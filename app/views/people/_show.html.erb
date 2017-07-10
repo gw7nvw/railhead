@@ -1,0 +1,99 @@
+<script> 
+   document.getElementById("page_status").innerHTML = '';
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <%=  link_to  "People", '/people', remote: true,  :id => 'people', :onclick => "linkHandler('people')" %>
+     &nbsp;--&gt;&nbsp;
+     <b><%= @person.id.to_s %></b>
+     </div>
+   <div id="controls">
+       <% if current_person.is_modifier or current_person.id == @person.id %>
+            <%=  link_to "Edit", '/people/'+@person.id.to_s+'/edit', class: "btn btn-small btn-primary", remote: true, :id => 'edit', :onclick => "linkHandler('edit')" %>
+       <% end %>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+   <%= render 'flash' %>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "First Name:" %></div>
+      <div class="rowtext"><%= @person.firstname %></div>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Last Name" %></div>
+      <div class="rowtext"><%= @person.lastname %></div>
+   </div>
+
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Username" %></div>
+      <div class="rowtext"><%= @person.username %></div>
+   </div>
+ 
+
+   <div class="erow" id="email"></div>
+      <div class="rowtitle"><%="Email" %></div>
+      <div class="rowtext"><%= @person.email %>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%="Mobile phone" %></div>
+      <div class="rowtext"><%= @person.mobile %></div>
+   </div>
+ 
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Home phone" %></div>
+      <div class="rowtext"><%= @person.homephone %></div>
+   </div>
+
+   <div class="erow"><div class="rowtitle">Address</div><div class="rowtext"><%= @person.address1 %></div></div>
+   <div class="erow"><div class="rowtitle">&nbsp;</div><div class="rowtext"><%= @person.address2 %></div></div>
+   <div class="erow"><div class="rowtitle">&nbsp;</div><div class="rowtext"><%= @person.address3 %></div></div>
+   <div class="erow"><div class="rowtitle">&nbsp;</div><div class="rowtext"><%= @person.postcode %></div></div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Nursery member?" %></div>
+      <div class="textext"><%= if @person.is_member then "Yes" else "No" end %></div>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Source landholder?" %></div>
+      <div class="textext"><%= if @person.is_source then "Yes" else "No" end %></div>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Destination landholder?" %></div>
+      <div class="textext"><%= if @person.is_destination then "Yes" else "No" end %></div>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Database access?" %></div>
+      <div class="textext"><%= if @person.is_user then 
+         "Yes: " +( 
+         if @person.is_modifier then "Read/Modify/Create " else "Read-Only" end + 
+         if @person.is_admin then "Administrator" else "" end)
+       else
+         "No" 
+       end %>
+      </div> 
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Enabled?" %></div>
+      <div class="textext"><%= if @person.is_active then "Yes" else "No" end %></div>
+   </div>
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

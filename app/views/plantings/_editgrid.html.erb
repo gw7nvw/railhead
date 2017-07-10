@@ -1,0 +1,68 @@
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <%=  link_to  "Planted:", '/plantings', remote: true,  :id => 'plantings', :onclick => "linkHandler('plantings')" %>
+     &nbsp;--&gt;&nbsp;
+     <b>Edit Table</b>
+     </div>
+   <div id="controls">
+       <%=  link_to "View Table", '/plantings/', class: "btn btn-small btn-primary", remote: true, :id => 'plantings', :onclick => "linkHandler('plantings')" %>
+       <% if current_person.is_admin %>
+          <input type="button" class= "btn btn-small btn-primary" value="Delete Row" onclick="grid.deleteSelectedRows()" />
+       <% end %>
+       <%=  link_to "Download", '/plantings.csv', class: "btn btn-small btn-primary"%>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+  <%= render 'flash' %>
+  <div id="grid_here" style="width: 100%; height: calc(100% - 72px); position: fixed"></div>
+</div>
+
+<% 
+  seedlings=Seedling.where(:is_active => true).order(:seedling_code).reverse
+  destinations=Destination.where(:is_active => true).order(:name)
+  projections=Projection.all
+%>
+
+<script type="text/javascript" charset="UTF-8">
+     map_smaller();
+     var grid = new dhtmlXGridObject("grid_here");
+     grid.setImagePath("/assets/imgs/");
+     grid.setHeader("Plantings Id, Seedlings Id, Destination, Dest Description, X, Y, Altitude, Projection, Date Planted, Number Planted, Date Checked, Number Survived, Notes");
+     grid.attachHeader("#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter");
+     grid.setColSorting("str,str,str,str,str,str,str,str,str,str,str,str,str");
+     grid.setColTypes("ro,coro,coro,ed,ed,ed,ed,coro,ed,ed,ed,ed,txt");
+     grid.setInitWidths("100,500,250,250,100,100,100,100,100,100,100,100,400,60");
+
+     grid.setSkin("dhx_skyblue");
+grid.getCombo(1).put(" ", " ");
+<% seedlings.each do |p| %>
+   grid.getCombo(1).put("<%=p.seedling_code%>", "<%=p.description%>");
+<% end %>
+grid.getCombo(2).put(" ", " ");
+<% destinations.each do |p| %>
+   grid.getCombo(2).put("<%=p.id%>", "<%=p.name%>");
+<% end %>
+grid.getCombo(7).put(" ", " ");
+<% projections.each do |p| %>
+   grid.getCombo(7).put("<%=p.id%>", "<%=p.name%>");
+<% end %>
+
+
+     grid.init();
+     grid.load("<%= planting_data_path %>", "json");
+     dp = new dataProcessor("<%= planting_db_action_path %>");
+     dp.setTransactionMode("GET",false);
+     dp.init(grid);
+
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+
+</script>
+
+

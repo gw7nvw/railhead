@@ -1,0 +1,88 @@
+<script>
+   reset_map_controllers();
+   document.getElementById("page_status").innerHTML = '';
+   plantings_layer.setVisibility(true);
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <b>Planted</b>
+     </div>
+   <div id="controls">
+       <% if current_person.is_modifier %>
+            <%=  link_to "Edit Table", '/plantings/editgrid', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('edit')" %>
+            <%=  link_to "Add row", '/plantings/new', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('add')" %>
+       <% end %>
+       <%=  link_to "Download", '/plantings.csv', class: "btn btn-small btn-primary"%>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+  <%= render 'flash' %>
+  <table class="places">
+      <tr>
+        <th>ID</th>
+        <th>Species</th>
+        <th>Source</th>
+        <th>Collected</th>
+        <th>Sown</th>
+        <th>Potted</th>
+        <th>Destination</th>
+        <th>X</th>
+        <th>Y</th>
+        <th>Date Planted</th>
+        <th>Number Planted</th>
+        <th>Date Checked</th>
+        <th>Number Survived</th>
+        <th>Notes</th>
+      </tr>
+
+    <% if @plantings then @plantings.each do |planting| %>
+      <tr>
+        <td>
+          <% if current_person.is_modifier %>
+            <span title="Click to edit"><%= link_to image_tag("/assets/pencil_edit.png", :class => 'dock-item'), '/plantings/'+planting.id.to_s+'/edit?referring=index', remote: true, onclick: "linkHandler('editbutton')", id:  "editbutton", alt: "Edit"  %></span>
+          <% end %>
+          <%= link_to planting.planting_code, '/plantings/'+planting.id.to_s, remote: true, :id => 'planting_link_'+planting.id.to_s, :onclick => "linkHandler('planting_link_"+planting.id.to_s+"')" %>
+        </td>
+
+        <td><%=if planting.species then link_to planting.species.name, '/species/'+planting.species.id.to_s, remote: true, :id => 'species_link_'+planting.id.to_s, :onclick => "linkHandler('species_link_"+planting.id.to_s+"')"  end%></td>
+        <td><%if planting.source then%>
+           <%=  link_to planting.source.name, '/sources/'+planting.source.id.to_s, remote: true, :id => 'source_link_'+planting.id.to_s, :onclick => "linkHandler('source_link_"+planting.id.to_s+"')" %>
+          <% else %>
+
+            <div class="hoverover"><span title='<%=if planting.collection then planting.collection.source_description end%>'><%=if planting.collection then planting.collection.source_description[0..15]+"..." end%></span></div>
+          <% end %>
+        </td>
+        <td><%=if planting.collection then link_to planting.collection.name, '/collections/'+planting.collection.id.to_s, remote: true, :id => 'collection_link_'+planting.id.to_s, :onclick => "linkHandler('collection_link_"+planting.id.to_s+"')"  end%></td>
+        <td><%=if planting.seed then link_to planting.seed.name, '/seeds/'+planting.seed.id.to_s, remote: true, :id => 'seed_link_'+planting.id.to_s, :onclick => "linkHandler('seed_link_"+planting.id.to_s+"')"  end%></td>
+        <td><%=if planting.seedling then link_to planting.seedling.name, '/seedlings/'+planting.seedling.id.to_s, remote: true, :id => 'seedling_link_'+planting.id.to_s, :onclick => "linkHandler('seedling_link_"+planting.id.to_s+"')"  end%></td>
+        <td>
+          <%if planting.destination then %>
+             <%= link_to planting.destination.name, '/destinations/'+planting.destination.id.to_s, remote: true, :id => 'destination_link_'+planting.id.to_s, :onclick => "linkHandler('destination_link_"+planting.id.to_s+"')" %>
+          <% else %>
+            <div class="hoverover"><span title='<%=planting.dest_description%>'><%=planting.dest_description[0..15]+"..."%></span></div>
+          <% end %>
+        </td>
+        <td><%=if planting.x then planting.x.to_i end%></td>
+        <td><%=if planting.y then planting.y.to_i end%></td>
+ 
+        <td><%=if planting.date_planted then planting.date_planted.strftime('%d/%m/%Y') end%></td>
+        <td><%=planting.number_planted %></td>
+        <td><%=if planting.date_checked then planting.date_checked.strftime('%d/%m/%Y') end%></td>
+        <td><%=planting.number_survived %></td>
+        <td><%if planting.notes and planting.notes.length>0 %><div class="hoverover"><span title='<%=planting.notes%>'><%=planting.notes[0..8]+"..."%></span></div><%end%></td>
+      </tr>
+    <% end end %>
+  </table>
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+}
+</script>

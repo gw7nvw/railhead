@@ -1,0 +1,54 @@
+
+<script>
+   reset_map_controllers();
+   document.getElementById("page_status").innerHTML = '';
+   areas_layer.setVisibility(true);
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <b>Areas</b>
+     </div>
+   <div id="controls">
+       <% if current_person and current_person.is_modifier %>
+            <%=  link_to "Edit Table", '/areas/editgrid', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('edit')" %>
+            <%=  link_to "Add row", '/areas/new', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('add')" %>
+       <% end %>
+       <%=if signed_in? then   link_to "Download", '/areas.csv', class: "btn btn-small btn-primary" end%>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+  <%= render 'flash' %>
+  <table class="places">
+      <tr>
+        <th>Name</th>
+        <th>Notes</th>
+      </tr>
+
+    <% if @areas then @areas.each do |area| %>
+      <tr>
+        <td>
+          <% if current_person and current_person.is_modifier %>
+            <span title="Click to edit"><%= link_to image_tag("/assets/pencil_edit.png", :class => 'dock-item'), '/areas/'+area.id.to_s+'/edit?referring=index', remote: true, onclick: "linkHandler('editbutton')", id:  "editbutton", alt: "Edit"  %></span>
+          <% end %>
+          <%= link_to area.name.capitalize, '/areas/'+area.id.to_s, remote: true, :id => 'area_link_'+area.id.to_s, :onclick => "linkHandler('area_link_"+area.id.to_s+"')" %>
+        </td>
+
+        <td><%if area.notes and area.notes.length>0 %><div class="hoverover"><span title='<%=area.notes%>'><%=area.notes[0..8]+"..."%></span></div><%end%></td>
+
+      </tr>
+    <% end end%>
+  </table>
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+}
+</script>
+

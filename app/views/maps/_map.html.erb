@@ -1,0 +1,38 @@
+  <!--<span title="Print current map"> -->
+   <!--<img src='/assets/print-white16.png' width="16" id="print_left" style="border:2px solid lightgrey" onclick="PrintElem('left_panel')"> -->
+  <!--</span> -->
+<div id="filterdiv" style="display:none">
+<ul style="list-style-type:none;padding:0;margin:0;">
+  <li>
+   <img src='/assets/walk.png' width="16" id="show_route" style="border:2px solid white" onclick="toggle_routes()">Routes
+  </li>
+  <li>
+   <img src='/assets/hut.png' width="16" id="show_accomodation" style="border:2px solid white" onclick="toggle_map('accomodation')">Huts / campsites
+  </li>
+  <li>
+   <img src='/assets/road.png' width="16" id="show_roadend" style="border:2px solid white" onclick="toggle_map('roadend')">Roadends
+  </li>
+  <li>
+   <img src='/assets/peak.png' width="16" id="show_summit" style="border:2px solid white" onclick="toggle_map('summit')">Summits
+  </li>
+  <li>
+   <img src='/assets/crossings.png' width="16" id="show_crossing" style="border:2px solid white" onclick="toggle_map('crossing')">Passes / crossings
+  </li>
+  <li>
+   <img src='/assets/natural.png' width="16" id="show_scenic" style="border:2px solid white" onclick="toggle_map('scenic')">Scenic features
+  </li>
+  <li>
+   <img src='/assets/other.png' width="16" id="show_other" style="border:2px solid white" onclick="toggle_map('other')">Junctions
+  </li>
+  <li>
+  &nbsp;
+  </li>
+  <li>
+   <img src='/assets/doc16.png' width="16" id="show_docland" style="border:2px solid white" onclick="toggle_docland()">DOC Land
+  </li>
+</div>
+
+<div id="map_map">
+   <div id="page_status" style="z-index:9999;position:absolute;right:10px;"></div> 
+   <div id="tooltip"></div>
+</div>

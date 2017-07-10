@@ -1,0 +1,85 @@
+<script>
+function update_seed_code() {
+  document.getElementById('seedling_seedling_code').value=document.getElementById('seedling_seed_code').value+"."
+}
+</script>
+
+<% if params[:source] then %>
+    <% @seedling.seed_code=params[:source] %>
+    <script>update_seed_code();</script>
+<% end %>
+
+
+<div class="fullform">
+   <%= form_for @seedling, remote: true, :html => {:name => 'seedlingform'} do |f| %>
+    <div id="actionbar" class="span7" style="margin-top: -32px; margin-left: -6px">
+       <div id="crumbs">
+         <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+         &nbsp;--&gt;&nbsp;
+         <%=  link_to  "Potted:", '/seedlings', remote: true,  :id => 'seedlings', :onclick => "linkHandler('seedlings')" %>
+         &nbsp;--&gt;&nbsp;
+         <%if @seedling.id%>
+            <b><%=link_to @seedling.id.to_s, '/seedlings/'+@seedling.id.to_s, remote: true, :id => 'seedling', :onclick => "linkHandler('seedling')" %>
+            &nbsp;--&gt;&nbsp;
+            <b>Edit</b>
+         <% else %>
+            <b>New</b>
+         <% end %>
+       </div>
+       <div id="controls">
+          <%= f.submit @submit_button, class: "btn btn-small btn-primary" %>
+          <%  if(@submit_button == "Save Changes" and @current_person.is_admin) %>
+            <%= f.submit "Delete", confirm: "Delete seedlings: Are you sure?", class: "btn btn-small btn-primary", name: "delete", id:  "deletebutton", remote: true %>
+          <% end %>
+          <% if params[:referring]=='index'%>
+            <%=  link_to "Cancel", '/seedlings', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('cancel')" %>
+          <% else %>
+            <%=  link_to "Cancel", '/seedlings/'+@seedling.id.to_s, class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('cancel')" %>
+          <% end %>
+          <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+       </div>
+    </div>
+
+    <div id="right_scroll">
+      <%= hidden_field_tag(:referring, @referring) %>
+      <%= render 'flash' %>
+      <%= render 'shared/error_messages' %>
+
+      <div class="sectiontitle">Source seed stock</div>
+      <%= collection_select( :seedling, :seed_code, Seed.where(is_active: true).order(:seed_code).reverse, :seed_code, :description, {include_blank: '', default: nil}, onchange: 'update_seed_code()') %>
+
+      <div class="sectiontitle">Seedling ID (confirmed on save)</div>
+      <%= f.text_field :seedling_code, readonly: true %>
+
+      <div class="sectiontitle">Date Potted</div>
+      <%= f.date_field :date_potted %>
+  
+      <div class="sectiontitle">Number Potted</div>
+      <%= f.text_field :number_potted %>
+
+      <div class="sectiontitle">Number Died</div>
+      <%= f.text_field :number_died %>
+
+      <div class="sectiontitle">Current Stock</div>
+      <%= f.text_field :current_stock %>
+
+      <div class="sectiontitle">Notes</div>
+      <%= f.text_area :notes, rows: 5 %>
+
+      <%= "Active? " %><br/>
+      <%= f.check_box :is_active%><br/><br/>
+
+    </div>
+  <% end %>
+</div>
+
+<script>
+    <% if @seedling.seed and @seedling.seed.collection %> place_init('<%=@seedling.seed.collection.location%>', '', 0); <% end %>
+    deactivate_all_click();
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+
+</script>
+

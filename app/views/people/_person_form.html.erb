@@ -1,0 +1,106 @@
+ <div class="fullform">
+  <%= form_for @person, remote: true do |f| %>
+    <div id="actionbar" class="span7" style="margin-top: -32px; margin-left: -6px">
+       <div id="crumbs">
+         <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+         &nbsp;--&gt;&nbsp;
+         <%=  link_to  "People", '/people', remote: true,  :id => 'people', :onclick => "linkHandler('people')" %>
+         &nbsp;--&gt;&nbsp;
+         <%if @person.id%>
+            <b><%=link_to @person.id.to_s, '/people/'+@person.id.to_s, remote: true, :id => 'person', :onclick => "linkHandler('person')" %>
+            &nbsp;--&gt;&nbsp;
+            <b>Edit</b>
+         <% else %>
+            <b>New</b>
+         <% end %>
+       </div>
+
+       <div id="controls">
+          <%= f.submit @submit_button, class: "btn btn-small btn-primary" %>
+          <%  if(@submit_button == "Save Changes" and @current_person.is_admin) %>
+            <%= f.submit "Delete", confirm: "Delete person: Are you sure?", class: "btn btn-small btn-primary", name: "delete", id:  "deletebutton", remote: true %>
+          <% end %>
+          <% if params[:referring]=='index'%>
+            <%=  link_to "Cancel", '/people', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('cancel')" %>
+          <% else %>
+            <%=  link_to "Cancel", '/people/'+@person.id.to_s, class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('cancel')" %>
+          <% end %>
+          <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+       </div>
+    </div>
+
+    <div id="right_scroll">
+      <%= hidden_field_tag(:referring, @referring) %>
+
+      <%= render 'flash' %>
+      <%= render 'shared/error_messages' %>
+
+      <div class="sectiontitle">First Name</div>
+      <%= f.text_field :firstname %>
+
+      <div class="sectiontitle">Last Name</div>
+      <%= f.text_field :lastname %>
+  
+      <div class="sectiontitle">Username</div>
+      <%= f.text_field :username %>
+
+      <div class="sectiontitle">Email</div>
+      <%= f.text_field :email %>
+
+      <div class="sectiontitle">Mobile</div>
+      <%= f.text_field :mobile %>
+
+      <div class="sectiontitle">Home phone</div>
+      <%= f.text_field :homephone %>
+
+
+      <div class="sectiontitle">Address</div>
+      <%= f.text_field :address1 %>
+      <%= f.text_field :address2 %>
+      <%= f.text_field :address3 %>
+
+      <div class="sectiontitle">Postcode</div>
+      <%= f.text_field :postcode %>
+     
+      <% if current_person.id == @person.id or current_person.is_admin %>
+        <div class="sectiontitle">Password</div>
+        <%= f.password_field :password %>
+
+        <div class="sectiontitle">Confirm Password</div>
+        <%= f.password_field :password_confirmation %>
+      <% end %>
+
+      <div class="rowtitle">Is source landholder</div>
+      <div class="rowtext"><%= f.check_box :is_source%></div>
+
+      <div class="rowtitle">Is destination landholder</div>
+      <div class="rowtext"><%= f.check_box :is_destination%></div>
+
+      <% if current_person.is_admin %>
+
+        <div class="rowtitle">Is member</div>
+        <div class="rowtext"><%= f.check_box :is_member %></div>
+  
+        <div class="rowtitle">Database access</div>
+        <div class="rowtext"><%= f.check_box :is_user%></div>
+  
+        <div class="rowtitle">Database modify</div>
+        <div class="rowtext"><%= f.check_box :is_modifier%></div>
+  
+        <div class="rowtitle">Database admin</div>
+        <div class="rowtext"><%= f.check_box :is_admin%></div>
+
+        <div class="rowtitle">Active</div>
+        <div class="rowtext"><%= f.check_box :is_active%></div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

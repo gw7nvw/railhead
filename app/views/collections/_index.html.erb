@@ -1,0 +1,92 @@
+<script>
+   reset_map_controllers();
+   document.getElementById("page_status").innerHTML = '';
+   collections_layer.setVisibility(true);
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <b>Collected</b>
+     </div>
+   <div id="controls">
+       <% if current_person.is_modifier %>
+            <%=  link_to "Edit Table", '/collections/editgrid', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('edit')" %>
+            <%=  link_to "Add row", '/collections/new', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('add')" %>
+       <% end %>
+       <%=  link_to "Download", '/collections.csv', class: "btn btn-small btn-primary"%>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+<div id="right_scroll">
+  <%= render 'flash' %>
+  <table class="places">
+      <tr>
+        <th>Id</th>
+        <th>Date</th>
+        <th>Species</th>
+        <th>Source</th>
+        <th>X</th>
+        <th>Y</th>
+        <th>Sampled</th>
+        <th>Collected</th>
+        <th>Stock</th>
+        <th style="text-align:center">
+          <%=render :partial => 'filter',  :locals => {:filtername => "seeds", :formname => "/collections"} %>
+          Seeds
+        </th>
+        <th style="text-align:center">
+          <%=render :partial => 'filter',  :locals => {:filtername => "cuttings", :formname => "/collections"} %>
+          Cuttings
+        </th>
+        <th>Team Lead</th>
+        <th>Notes</th>
+        <th style="text-align:center">
+          <%=render :partial => 'filter',  :locals => {:filtername => "active", :formname => "/colections"} %>
+          Active
+        </th>
+      </tr>
+    <% if @collections then @collections.each do |collection| %>
+      <tr>
+        <td>
+          <% if current_person.is_modifier %>
+             <span title="Click to edit row"><%= link_to image_tag("/assets/pencil_edit.png", :class => 'dock-item'), '/collections/'+collection.id.to_s+'/edit?referring=index', remote: true, onclick: "linkHandler('editbutton')", id:  "editbutton", alt: "Edit"  %></span>
+          <% end %>
+          <%= link_to collection.id.to_s, '/collections/'+collection.id.to_s, remote: true, :id => 'collection_link_'+collection.id.to_s, :onclick => "linkHandler('collection_link_"+collection.id.to_s+"')" %>
+        </td>
+        <td>
+          <% if collection.date %>
+            <%= collection.date.strftime('%d/%m/%Y') %>
+          <% end %>
+        </td>
+        <td><%=if collection.species then link_to collection.species.genus+" "+collection.species.species, '/species/'+collection.species.id.to_s, remote: true, :id => 'species_link_'+collection.id.to_s, :onclick => "linkHandler('species_link_"+collection.id.to_s+"')" end%></td>
+
+        <td>
+          <%if collection.source then %>
+             <%= link_to collection.source.name, '/sources/'+collection.source_id.to_s, remote: true, :id => 'source_link_'+collection.id.to_s, :onclick => "linkHandler('source_link_"+collection.id.to_s+"')" %>
+          <% else %>
+            <div class="hoverover"><span title='<%=collection.source_description%>'><%=collection.source_description[0..15]+"..."%></span></div>
+          <% end %>
+        </td>
+        <td><%=if collection.x then collection.x.to_i end%></td>
+        <td><%=if collection.y then collection.y.to_i end%></td>
+        <td><%=collection.no_plants_sampled%></td>
+        <td><%=collection.no_collected%></td>
+        <td><%=collection.current_stock%></td>
+        <td style="text-align:center"><%= check_box "collection", "is_seeds", {:checked => collection.is_seeds, :disabled => true} %></td>
+        <td style="text-align:center"><%= check_box "collection", "is_cuttings", {:checked => collection.is_cuttings, :disabled => true} %></td>
+        <td><%=if collection.team_lead then link_to collection.team_lead.name, '/people/'+collection.team_lead_id.to_s, remote: true, :id => 'person_link_'+collection.id.to_s, :onclick => "linkHandler('person_link_"+collection.id.to_s+"')"  end%></td>
+        <td><%if collection.notes and collection.notes.length>0 %><div class="hoverover"><span title='<%=collection.notes%>'><%=collection.notes[0..8]+"..."%></span></div><%end%></td>
+        <td style="text-align:center"><%= check_box "collection", "is_active", {:checked => collection.is_active, :disabled => true} %></td>
+      </tr>
+    <% end end %>
+  </table>
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+}
+</script>

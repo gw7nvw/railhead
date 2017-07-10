@@ -1,0 +1,61 @@
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <%=  link_to  "Destinations:", '/destinations', remote: true,  :id => 'destinations', :onclick => "linkHandler('destinations')" %>
+     &nbsp;--&gt;&nbsp;
+     <b>Edit Table</b>
+     </div>
+   <div id="controls">
+       <%=  link_to "View Table", '/destinations/', class: "btn btn-small btn-primary", remote: true, :id => 'destinations', :onclick => "linkHandler('destinations')" %>
+       <% if current_person.is_admin %>
+          <input type="button" class= "btn btn-small btn-primary" value="Delete Row" onclick="grid.deleteSelectedRows()" />
+       <% end %>
+       <%=  link_to "Download", '/destinations.csv', class: "btn btn-small btn-primary"%>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+  <%= render 'flash' %>
+  <div id="grid_here" style="width: 100%; height: calc(100% - 72px); position: fixed"></div>
+</div>
+
+
+<% 
+  projections=Projection.all
+  contacts=Person.find_by_sql [ "select * from people where is_destination is true and is_active is true" ]
+%>
+
+<script type="text/javascript" charset="UTF-8">
+     map_smaller();
+     var grid = new dhtmlXGridObject("grid_here");
+     grid.setImagePath("/assets/imgs/");
+     grid.setHeader("Id, Name, Owner, Status, Contact, Address1, Address2, Address3, X,Y,Altitude,Projection,Notes,Active?");
+     grid.attachHeader("#,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter");
+     grid.setColSorting("int,str,strstr,str,str,str,str,int,int,int,str,str,str");
+     grid.setColTypes("ro,ed,ed,ed,coro,ed,ed,ed,edn,edn,edn,coro,txt,ch");
+     grid.setInitWidths("60,200,200,200,150,200,200,200,100,100,100,100,500,60");
+
+     grid.setSkin("dhx_skyblue");
+grid.getCombo(4).put(" ", " ");
+<% contacts.each do |p| %>
+   grid.getCombo(4).put("<%=p.id%>", "<%=p.name%>");
+<% end %>
+grid.getCombo(11).put("", "");
+<% projections.each do |p| %>
+   grid.getCombo(11).put("<%=p.id%>", "<%=p.name%>");
+<% end %>
+     grid.init();
+     grid.load("<%= destination_data_path %>", "json");
+     dp = new dataProcessor("<%= destination_db_action_path %>");
+     dp.setTransactionMode("GET",false);
+     dp.init(grid);
+
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+
+

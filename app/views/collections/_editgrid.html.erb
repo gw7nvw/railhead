@@ -1,0 +1,70 @@
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <%=  link_to  "Collected:", '/collections', remote: true,  :id => 'collections', :onclick => "linkHandler('collections')" %>
+     &nbsp;--&gt;&nbsp;
+     <b>Edit Table</b>
+     </div>
+   <div id="controls">
+       <%=  link_to "View Table", '/collections/', class: "btn btn-small btn-primary", remote: true, :id => 'collections', :onclick => "linkHandler('collections')" %>
+       <% if current_person.is_admin %>
+            <input type="button" class= "btn btn-small btn-primary" value="Delete Row" onclick="grid.deleteSelectedRows()" />
+       <% end %>
+       <%=  link_to "Download", '/collections.csv', class: "btn btn-small btn-primary"%>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+   <%= render 'flash' %>
+   <div id="grid_here" style="width: 100%; height: calc(100% - 72px); position: fixed"></div>
+</div>
+<% 
+  projections=Projection.all
+  sources=Source.find_by_sql [ "select * from sources where is_active is true" ]
+  members=Person.find_by_sql [ "select * from people where is_member is true and is_active is true" ]
+  species=Species.where(is_active: true)
+%>
+<script type="text/javascript" charset="UTF-8">
+     map_smaller();
+     var grid = new dhtmlXGridObject("grid_here");
+     grid.setImagePath("/assets/imgs/");
+     grid.setHeader("Id, Date, Species, Source property, Source description, x,y,altitude,projection,#sampled, #collected, current stock, seeds?, cuttings?, Team lead, Team members, Storage, Notes");
+     grid.attachHeader("#,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter");
+     grid.setColSorting("int,date,str,str,str,int,int,int,str,str,str,str,str,str,str,str,str,str,str");
+     grid.setColTypes("ro,ed,coro,coro,ed,edn,edn,edn,coro,ed,ed,ed,ch,ch,coro,ed,ed,txt,ch");
+     grid.setInitWidths("60,100,200,200,200,100,100,100,100,100,100,100,60,60,200,200,400,500,60");
+
+     grid.setSkin("dhx_skyblue");
+grid.getCombo(3).put(" ", " ");
+<% sources.each do |p| %>
+   grid.getCombo(3).put("<%=p.id%>", "<%=p.name%>");
+<% end %>
+grid.getCombo(8).put("", "");
+<% projections.each do |p| %>
+   grid.getCombo(8).put("<%=p.id%>", "<%=p.name%>");
+<% end %>
+grid.getCombo(14).put("", "");
+<% members.each do |p| %>
+   grid.getCombo(14).put("<%=p.id%>", "<%=p.name%>");
+<% end %>
+grid.getCombo(2).put(" ", " ");
+<% species.each do |p| %>
+   grid.getCombo(2).put("<%=p.code%>", "<%=p.name%>");
+<% end %>
+     grid.init();
+     grid.load("<%= data_path %>", "json");
+     dp = new dataProcessor("<%= db_action_path %>");
+     dp.setTransactionMode("GET",false);
+     dp.init(grid);
+
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+
+</script>
+
+

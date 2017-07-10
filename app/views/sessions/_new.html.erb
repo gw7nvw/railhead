@@ -1,0 +1,46 @@
+<script> 
+   document.getElementById("page_status").innerHTML = '';
+</script>
+
+ <%= javascript_include_tag('rsa/jsbn', 'rsa/prng4', 'rsa/rng', 'rsa/rsa', 'rsa/base64', :cache => true) %>
+<div class="fullform">
+  <%= form_for(:session, url: sessions_path) do |f| %>
+    <div id="actionbar" class="span7" style="margin-top: -32px; margin-left: -6px">
+       <div id="crumbs">
+         <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+         &nbsp;--&gt;&nbsp;
+         <b>Sign In</b>
+       </div>
+
+       <div id="controls">
+          <%= f.submit "Sign in", class: "btn btn-small btn-primary", onclick: "signinHandler()" , id: "signin" %>
+          <%= link_to "Forgotton password", new_password_reset_path, class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('forgot')" %>
+          <%= link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+       </div>
+    </div>
+
+    <div id="right_scroll">
+      <%= hidden_field_tag(:referring, @referring) %>
+      <%= render 'flash' %>
+      <%= render 'shared/error_messages' %>
+
+      <div class="sectiontitle">Username / Email</div>
+      <%= f.text_field :email %>
+
+      <div class="sectiontitle">Password</div>
+      <%= f.password_field :upassword %>
+      <%= f.hidden_field :password %>
+    </div>
+    This form uses <%= link_to "RSA encryption", "https://en.wikipedia.org/wiki/RSA_Security" %> to protect your information
+  <% end %>
+  <%= hidden_field_tag :public_modulus, @public_modulus %>
+  <%= hidden_field_tag :public_exponent, @public_exponent %>
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

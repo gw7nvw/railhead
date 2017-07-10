@@ -1,0 +1,73 @@
+<script> 
+   document.getElementById("page_status").innerHTML = '';
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <%=  link_to  "Destinations:", '/destinations', remote: true,  :id => 'destinations', :onclick => "linkHandler('destinations')" %>
+     &nbsp;--&gt;&nbsp;
+     <b><%= @destination.id.to_s %></b>
+     </div>
+   <div id="controls">
+       <% if current_person.is_modifier %>
+            <%=  link_to "Edit", '/destinations/'+@destination.id.to_s+'/edit', class: "btn btn-small btn-primary", remote: true, :id => 'edit', :onclick => "linkHandler('edit')" %>
+       <% end %>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+   <%= render 'flash' %>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Name:" %></div>
+      <div class="rowtext"><%= @destination.name %></div>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Owner:" %></div>
+      <div class="rowtext"><%= @destination.owner %></div>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Legal status:" %></div>
+      <div class="rowtext"><%= @destination.legal_status %></div>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Notes" %></div>
+      <div class="rowtext"><%= @destination.notes %></div>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Property Address" %></div>
+      <div class="rowtext"><%= @destination.property_address1 %></div>
+      <div class="rowtext"><%= @destination.property_address2 %></div>
+      <div class="rowtext"><%= @destination.property_address3 %></div>
+   </div>
+
+<% if @destination.x and @destination.y %>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Location" %></div>
+      <div class="rowtext"> <%= "NZTM2000: "+@destination.x.round().to_s+", "+@destination.y.round().to_s %><% if @destination.altitude %><%=" (alt: "+@destination.altitude.to_i.to_s+"m)"%> <% end %> </div>
+   </div>
+<% end %>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Enabled?" %></div>
+      <div class="textext"><%= if @destination.is_active then "Yes" else "No" end %></div>
+   </div>
+</div>
+
+<script>
+    place_init('', '<%=@destination.boundary%>', 0);
+    add_dest('<%=@destination.location%>');
+
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

@@ -1,0 +1,83 @@
+
+<script> 
+   document.getElementById("page_status").innerHTML = '';
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <%=  link_to  "Areas:", '/areas', remote: true,  :id => 'areas', :onclick => "linkHandler('areas')" %>
+     &nbsp;--&gt;&nbsp;
+     <b><%= @area.name %></b>
+     </div>
+   <div id="controls">
+       <% if current_person and current_person.is_modifier %>
+            <%=  link_to "Edit", '/areas/'+@area.id.to_s+'/edit', class: "btn btn-small btn-primary", remote: true, :id => 'edit', :onclick => "linkHandler('edit')" %>
+       <% end %>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+   <%= render 'flash' %>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Name:" %></div>
+      <div class="rowtext"><%= @area.name %></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Notes" %></div>
+      <div class="rowtext"><%= @area.notes %></div>
+   </div>
+
+   <div class="erow">
+      <div class="hrline">
+         <hr noshade size="4">
+      </div>
+   </div>
+   <div class="erow">
+      <div class="sectiontitle">Current stock sourced from this area:</div>
+      </br>
+      </br>
+   </div>
+
+
+   <table class="places" id="tree-table">
+     <tr>
+       <th>Id</th>
+       <th>Species</th>
+       <th>Date collected</th>
+       <th>No. Seeds</th>
+       <th>No. Germinating</th>
+       <th>No. Seedlings</th>
+    </tr>
+
+    <% 
+      @collections=Collection.find_by_sql [ "SELECT cl.* FROM areas a LEFT JOIN collections cl ON st_contains(a.boundary, cl.location) WHERE a.id = ? and cl.is_active=true ORDER BY cl.species_code, cl.date", @area.id ]
+      @collections.each do |collection| 
+        seeds=Seed.find_by_sql [ "SELECT SUM(number_sown) AS number_sown FROM seeds WHERE collection_id = ? AND is_active=true", collection.id.to_s ]
+        if seeds and seeds.first then seed=seeds.first.number_sown end
+        seedlings=Seedling.find_by_sql [ "select SUM(current_stock) as current_stock from seedlings where seed_code LIKE ? AND is_active=true", collection.id.to_s+".%" ]
+        if seedlings and seedlings.first then seedling=seedlings.first.current_stock end
+      %>
+      <tr>
+        <td><%= if signed_in? then link_to collection.id.to_s, '/collections/'+collection.id.to_s, remote: true, :id => 'collection_link_'+collection.id.to_s, :onclick => "linkHandler('collection_link_"+collection.id.to_s+"')"  else collection.id.to_s end %></td>
+        <td><%= link_to collection.species.name, '/species/'+collection.species.id.to_s, remote: true, :id => 'species_link_'+collection.id.to_s, :onclick => "linkHandler('spedies_link_"+collection.id.to_s+"')" %></td>
+        <td><%=if collection.date then collection.date.strftime('%d/%m/%Y') end%></td>
+        <td><%=collection.current_stock%>
+        <td><%=seed%></td>
+        <td><%=seedling%></td>
+      </tr>
+    <% end %>
+   </table>
+</div>
+
+<script>
+    areas_layer.setVisibility(true);
+    place_init('', '<%=@area.boundary%>', 0);
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

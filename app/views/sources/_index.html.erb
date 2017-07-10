@@ -1,0 +1,73 @@
+
+<script>
+   reset_map_controllers();
+   document.getElementById("page_status").innerHTML = '';
+   sources_layer.setVisibility(true);
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <b>Sources</b>
+     </div>
+   <div id="controls">
+       <% if current_person.is_modifier %>
+            <%=  link_to "Edit Table", '/sources/editgrid', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('edit')" %>
+            <%=  link_to "Add row", '/sources/new', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('add')" %>
+       <% end %>
+       <%=  link_to "Download", '/sources.csv', class: "btn btn-small btn-primary"%>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+  <%= render 'flash' %>
+  <table class="places">
+      <tr>
+        <th>Name</th>
+        <th>Notes</th>
+        <th>Contact</th>
+        <th>Address</th>
+        <th>X</th>
+        <th>Y</th>
+        <th>Alt</th>
+        <th>Projn</th>
+        <th style="text-align:center">
+          <%=render :partial => 'filter',  :locals => {:filtername => "active", :formname => "/sources"} %>
+          Active
+        </th>
+      </tr>
+
+    <% if @sources then @sources.each do |source| %>
+      <tr>
+        <td>
+          <% if current_person.is_modifier %>
+            <span title="Click to edit"><%= link_to image_tag("/assets/pencil_edit.png", :class => 'dock-item'), '/sources/'+source.id.to_s+'/edit?referring=index', remote: true, onclick: "linkHandler('editbutton')", id:  "editbutton", alt: "Edit"  %></span>
+          <% end %>
+          <%= link_to source.name.capitalize, '/sources/'+source.id.to_s, remote: true, :id => 'source_link_'+source.id.to_s, :onclick => "linkHandler('source_link_"+source.id.to_s+"')" %>
+        </td>
+
+        <td><%if source.notes and source.notes.length>0 %><div class="hoverover"><span title='<%=source.notes%>'><%=source.notes[0..8]+"..."%></span></div><%end%></td>
+
+        <td><%=if source.contact_person then link_to source.contact_person.name, '/people/'+source.contact_person_id.to_s, remote: true, :id => 'person_link_'+source.id.to_s, :onclick => "linkHandler('person_link_"+source.id.to_s+"')"  end%></td>
+
+        <td><%if source.address and source.address.length>0 %><div class="hoverover"><span title='<%=source.address%>'><%=source.address[0..8]+"..."%></span></div><%end%></td>
+
+        <td><%=if source.x then source.x.to_i end%></td>
+        <td><%=if source.y then source.y.to_i end%></td>
+        <td><%=source.altitude%></td>
+        <td><%=if source.projection then source.projection.name end%></td>
+        <td style="text-align:center"><%= check_box "source", "is_active", {:checked => source.is_active, :disabled => true} %></td>
+      </tr>
+    <% end end%>
+  </table>
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+}
+</script>
+

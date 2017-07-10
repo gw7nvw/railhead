@@ -1,0 +1,56 @@
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <%=  link_to  "Potted:", '/seedlings', remote: true,  :id => 'seedlings', :onclick => "linkHandler('seedlings')" %>
+     &nbsp;--&gt;&nbsp;
+     <b>Edit Table</b>
+     </div>
+   <div id="controls">
+       <%=  link_to "View Table", '/seedlings/', class: "btn btn-small btn-primary", remote: true, :id => 'seedlings', :onclick => "linkHandler('seedlings')" %>
+       <% if current_person.is_admin %>
+          <input type="button" class= "btn btn-small btn-primary" value="Delete Row" onclick="grid.deleteSelectedRows()" />
+       <% end %>
+       <%=  link_to "Download", '/seedlings.csv', class: "btn btn-small btn-primary"%>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+  <%= render 'flash' %>
+  <div id="grid_here" style="width: 100%; height: calc(100% - 72px); position: fixed"></div>
+</div>
+
+<% 
+  seeds=Seed.all.order(:seed_code).reverse
+%>
+
+<script type="text/javascript" charset="UTF-8">
+     map_smaller();
+     var grid = new dhtmlXGridObject("grid_here");
+     grid.setImagePath("/assets/imgs/");
+     grid.setHeader("Seedlings Id, Seeds Id, Date Potted, Number Potted, Number Died, Current Stock, Notes, Active?");
+     grid.attachHeader("#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter,#text_filter");
+     grid.setColSorting("str,str,str,str,str,str,str,str");
+     grid.setColTypes("ro,coro,ed,ed,ed,ed,txt,ch");
+     grid.setInitWidths("100,400,100,100,100,100,400,60");
+
+     grid.setSkin("dhx_skyblue");
+grid.getCombo(1).put(" ", " ");
+<% seeds.each do |p| %>
+   grid.getCombo(1).put("<%=p.seed_code%>", "<%=p.description%>");
+<% end %>
+     grid.init();
+     grid.load("<%= seedling_data_path %>", "json");
+     dp = new dataProcessor("<%= seedling_db_action_path %>");
+     dp.setTransactionMode("GET",false);
+     dp.init(grid);
+
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+
+</script>
+
+

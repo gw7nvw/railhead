@@ -1,0 +1,120 @@
+<script>
+function update_seed_code() {
+  document.getElementById('planting_planting_code').value=document.getElementById('planting_seedling_code').value+"."
+}
+</script>
+
+<% if params[:source] then %>
+    <% @planting.seedling_code=params[:source] %>
+    <script>update_seed_code();</script>
+<% end %>
+
+<div class="fullform">
+   <%= form_for @planting, remote: true, :html => {:name => 'plantingform'} do |f| %>
+    <div id="actionbar" class="span7" style="margin-top: -32px; margin-left: -6px">
+       <div id="crumbs">
+         <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+         &nbsp;--&gt;&nbsp;
+         <%=  link_to  "Planted:", '/plantings', remote: true,  :id => 'plantings', :onclick => "linkHandler('plantings')" %>
+         &nbsp;--&gt;&nbsp;
+         <%if @planting.id%>
+            <b><%=link_to @planting.id.to_s, '/plantings/'+@planting.id.to_s, remote: true, :id => 'planting', :onclick => "linkHandler('planting')" %>
+            &nbsp;--&gt;&nbsp;
+            <b>Edit</b>
+         <% else %>
+            <b>New</b>
+         <% end %>
+       </div>
+       <div id="controls">
+          <%= f.submit @submit_button, class: "btn btn-small btn-primary" %>
+          <%  if(@submit_button == "Save Changes" and @current_person.is_admin) %>
+            <%= f.submit "Delete", confirm: "Delete planting: Are you sure?", class: "btn btn-small btn-primary", name: "delete", id:  "deletebutton", remote: true %>
+          <% end %>
+          <% if params[:referring]=='index'%>
+            <%=  link_to "Cancel", '/plantings', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('cancel')" %>
+          <% else %>
+            <%=  link_to "Cancel", '/plantings/'+@planting.id.to_s, class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('cancel')" %>
+          <% end %>
+          <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+       </div>
+    </div>
+
+    <div id="right_scroll">
+      <%= hidden_field_tag(:referring, @referring) %>
+      <%= render 'flash' %>
+      <%= render 'shared/error_messages' %>
+
+      <div class="sectiontitle">Source seedling stock</div>
+      <%= collection_select( :planting, :seedling_code, Seedling.where(:is_active => true).order(:seedling_code).reverse, :seedling_code, :description, {include_blank: '', default: nil}, onchange: 'update_seed_code()') %>
+
+      <div class="sectiontitle">Planting ID (confirmed on save)</div>
+      <%= f.text_field :planting_code, readonly: true %>
+
+      <div class="sectiontitle">Destination</div>
+      <%= collection_select( :planting, :destination_id, Destination.where(:is_active => true).order(:name), :id, :name, {include_blank: '', default: nil}) %>
+
+      <div class="sectiontitle">Destination description</div>
+      <%= f.text_field :dest_description %>
+
+     <div class="erow">
+           <div class="leftbuttons">
+              <span title="Click to draw location on map">
+                 <img id="placeplus" src="/assets/draw-point.png" onclick="selectPoint()" width="16" style="display:block">
+              </span>
+
+              <span title="Click to confirm selection">
+                 <img id="placetick" src="/assets/tick.png" onclick="point_selectNothing()" width="16" style="display:none">
+              </span>
+           </div>
+         <div class="sectiontitle25">Location:</div>
+      </div>
+      <%= f.hidden_field :location, :readonly => true %>
+
+      <%= f.label :projection %>
+      <%= collection_select( :planting, :projection_id, Projection.all.order(:name), :id, :name, {include_blank: '', default: nil}, {}) %>
+
+      <%= f.label :x %>
+      <%= f.text_field :x, :size => 8 %>
+
+      <%= f.label :y %>
+      <%= f.text_field :y, :size => 8 %>
+
+      <div class="sectiontitle">Altitude (leave blank to calculate from map upon save):</div>
+      <%= f.text_field :altitude %>
+
+      <div class="sectiontitle">Date Planted (or handed over)</div>
+      <%= f.date_field :date_planted %>
+  
+      <div class="sectiontitle">Number Planted (or handed over)</div>
+      <%= f.text_field :number_planted %>
+
+      <div class="sectiontitle">Date Checked</div>
+      <%= f.date_field :date_checked %>
+  
+      <div class="sectiontitle">Number Survived</div>
+      <%= f.text_field :number_survived %>
+
+      <div class="sectiontitle">Notes</div>
+      <%= f.text_area :notes, rows: 5 %>
+
+    </div>
+  <% end %>
+</div>
+
+<script>
+/*    reset_map_controllers(); */
+    <% if @planting.seed and @planting.seed.collection %> place_init('<%=@planting.seed.collection.location%>', '', 0); <% end %>
+    <% if @planting.location %> 
+      add_dest('<%=@planting.location%>'); 
+    <% else %>
+      <% if @planting.destination %> add_dest('<%=@planting.destination.location%>'); <% end %>
+    <% end %>
+
+    deactivate_all_click();
+
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

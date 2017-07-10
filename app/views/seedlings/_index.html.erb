@@ -1,0 +1,87 @@
+
+<script>
+   reset_map_controllers();
+   document.getElementById("page_status").innerHTML = '';
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <b>Potted</b>
+     </div>
+   <div id="controls">
+       <% if current_person.is_modifier %>
+            <%=  link_to "Edit Table", '/seedlings/editgrid', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('edit')" %>
+            <%=  link_to "Add row", '/seedlings/new', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('add')" %>
+       <% end %>
+       <%=  link_to "Download", '/seedlings.csv', class: "btn btn-small btn-primary"%>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+  <%= render 'flash' %>
+  <table class="places">
+      <tr>
+        <th>
+           ID
+        </th>
+        <th>Species</th>
+        <th>Source</th>
+        <th>Collected</th>
+        <th>Sown</th>
+        <th>Date Potted</th>
+        <th>Number Potted</th>
+        <th>Number Died</th>
+        <th>Current Stock</th>
+        <th>Notes</th>
+        <th style="text-align:center">
+          <%=render :partial => 'filter',  :locals => {:filtername => "active", :formname => "/seeds"} %>
+          Active
+        </th>
+
+      </tr>
+
+    <% if @seedlings then @seedlings.each do |seedling| %>
+      <tr>
+        <td>
+          <% if current_person.is_modifier %>
+            <span title="Click to edit"><%= link_to image_tag("/assets/pencil_edit.png", :class => 'dock-item'), '/seedlings/'+seedling.id.to_s+'/edit?referring=index', remote: true, onclick: "linkHandler('editbutton')", id:  "editbutton", alt: "Edit"  %></span>
+          <% end %>
+          <%= link_to seedling.seedling_code, '/seedlings/'+seedling.id.to_s, remote: true, :id => 'seedling_link_'+seedling.id.to_s, :onclick => "linkHandler('seedling_link_"+seedling.id.to_s+"')" %>
+        </td>
+
+        <td><%=if seedling.species then link_to seedling.species.name, '/species/'+seedling.species.id.to_s, remote: true, :id => 'species_link_'+seedling.id.to_s, :onclick => "linkHandler('species_link_"+seedling.id.to_s+"')"  end%></td>
+
+        <td><%if seedling.source then%>
+           <%=  link_to seedling.source.name, '/sources/'+seedling.source.id.to_s, remote: true, :id => 'source_link_'+seedling.id.to_s, :onclick => "linkHandler('source_link_"+seedling.id.to_s+"')" %>
+          <% else %>
+            <div class="hoverover"><span title='<%=if seedling.collection then seedling.collection.source_description end%>'><%=if seedling.collection then seedling.collection.source_description[0..15]+"..." end%></span></div>
+          <% end %>
+        </td>
+
+        <td><%=if seedling.collection then link_to seedling.collection.name, '/collections/'+seedling.collection.id.to_s, remote: true, :id => 'collection_link_'+seedling.id.to_s, :onclick => "linkHandler('collection_link_"+seedling.id.to_s+"')"  end%></td>
+
+        <td><%=if seedling.seed then link_to seedling.seed.name, '/seeds/'+seedling.seed.id.to_s, remote: true, :id => 'seed_link_'+seedling.id.to_s, :onclick => "linkHandler('seed_link_"+seedling.id.to_s+"')"  end%></td>
+
+        <td><%=if seedling.date_potted then seedling.date_potted.strftime('%d/%m/%Y') end%></td>
+
+        <td><%=seedling.number_potted %></td>
+        <td><%=seedling.number_died %></td>
+        <td><%=seedling.current_stock %></td>
+        <td><%if seedling.notes and seedling.notes.length>0 %><div class="hoverover"><span title='<%=seedling.notes%>'><%=seedling.notes[0..8]+"..."%></span></div><%end%></td>
+        <td style="text-align:center"><%= check_box "seedling", "is_active", {:checked => seedling.is_active, :disabled => true} %></td>
+
+      </tr>
+    <% end end %>
+  </table>
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+}
+</script>
+

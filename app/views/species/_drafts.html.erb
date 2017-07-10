@@ -1,0 +1,28 @@
+<% provide(:title, @user.name) %>
+<% @title=" | User | "+@user.name+" | Draft Items" %>
+<%= render 'flash' %>
+<%= render 'application/mail_status' %>
+
+
+<script> 
+   update_title('<%=@title%>'); 
+   document.getElementById("page_status").innerHTML = '';
+</script>
+<div class="sectiontitle">
+<%= @user.name.capitalize %>: Draft Items
+</div>
+<br/>
+<br/>
+
+  <div class="sectiontitle">
+    Draft routes: 
+  </div>
+  <% @routes = @user.routes.select{ |route| !route.published }  %>
+  <% @hidetitle=true %>
+  <%= render 'routes/index_details' %>
+  <div class="erow">
+  <br/>
+  <br/>
+  </div>
+  <%= render 'trips/index_details' %>
+
