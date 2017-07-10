@@ -1,0 +1,85 @@
+
+<script>
+   reset_map_controllers();
+   document.getElementById("page_status").innerHTML = '';
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <b>People</b>
+     </div>
+   <div id="controls">
+       <% if current_person.is_modifier %>
+            <%=  link_to "Edit Table", '/people/editgrid', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('edit')" %>
+            <%=  link_to "Add row", '/people/new', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('add')" %>
+       <% end %>
+       <%=  link_to "Download", '/people.csv', class: "btn btn-small btn-primary"%>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+  <%= render 'flash' %>
+  <table class="places">
+      <tr>
+        <th>Name</th>
+        <th>Username</th>
+        <th>Address</th>
+        <th>Email</th>
+        <th>Mobile</th>
+        <th>Landline</th>
+        <th style="text-align:center">
+          <%=render :partial => 'filter',  :locals => {:filtername => "source", :formname => "/people"} %>
+          Source
+        </th>
+        <th style="text-align:center">
+          <%=render :partial => 'filter',  :locals => {:filtername => "destination", :formname => "/people"} %>
+          Dest
+        </th>
+        <th style="text-align:center">
+          <%=render :partial => 'filter',  :locals => {:filtername => "member", :formname => "/people"} %>
+          Member
+        </th>
+        <th style="text-align:center">
+          <%=render :partial => 'filter',  :locals => {:filtername => "user", :formname => "/people"} %>
+          User
+        </th>
+        <th style="text-align:center">
+          <%=render :partial => 'filter',  :locals => {:filtername => "active", :formname => "/people"} %>
+          Active
+        </th>
+      </tr>
+    
+    <% if @people then @people.each do |person| %>
+      <tr>
+        <td>
+          <% if current_person.is_modifier or current_person.id == person.id %>
+            <span title="Click to edit"><%= link_to image_tag("/assets/pencil_edit.png", :class => 'dock-item'), '/people/'+person.id.to_s+'/edit?referring=index', remote: true, onclick: "linkHandler('editbutton')", id:  "editbutton", alt: "Edit"  %></span>
+          <% end %>
+          <%= link_to person.firstname.capitalize+ " "+person.lastname.capitalize, '/people/'+person.id.to_s, remote: true, :id => 'person_link_'+person.id.to_s, :onclick => "linkHandler('person_link_"+person.id.to_s+"')" %>
+        </td>
+
+        <td><%=person.username.upcase%></td>
+        <td><%if person.address and person.address.length>0 %><div class="hoverover"><span title='<%=person.address%>'><%=person.address3[0..8]+"..."%></span></div><%end%></td>
+        <td><%=person.email%></td>
+        <td><%=person.mobile%></td>
+        <td><%=person.homephone%></td>
+        <td style="text-align:center"><%= check_box "person", "is_source", {:checked => person.is_source, :disabled => true} %></td>
+        <td style="text-align:center"><%= check_box "person", "is_destination", {:checked => person.is_destination, :disabled => true} %></td>
+        <td style="text-align:center"><%= check_box "person", "is_member", {:checked => person.is_member, :disabled => true} %></td>
+        <td style="text-align:center"><%= check_box "person", "is_user", {:checked => person.is_user, :disabled => true} %></td>
+        <td style="text-align:center"><%= check_box "person", "is_active", {:checked => person.is_active, :disabled => true} %></td>
+      </tr>
+    <% end end %>
+  </table>
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+}
+</script>
+

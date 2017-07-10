@@ -1,0 +1,124 @@
+<script> 
+   document.getElementById("page_status").innerHTML = '';
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <%=  link_to  "Planted:", '/plantings', remote: true,  :id => 'plantings', :onclick => "linkHandler('plantings')" %>
+     &nbsp;--&gt;&nbsp;
+     <b><%= @planting.id.to_s %></b>
+     </div>
+   <div id="controls">
+       <% if current_person.is_modifier %>
+            <%=  link_to "Edit", '/plantings/'+@planting.id.to_s+'/edit', class: "btn btn-small btn-primary", remote: true, :id => 'edit', :onclick => "linkHandler('edit')" %>
+       <% end %>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+  <%= render 'flash' %>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Planting ID:" %></div>
+      <div class="rowtext"><%= @planting.planting_code %></div>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Species" %></div>
+      <div class="rowtext"><%= if @planting.species then link_to @planting.species.name, '/species/'+@planting.species.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')" end %></div>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Source" %></div>
+        <%if @planting.source then%>
+           <%=  link_to @planting.source.name, '/sources/'+@planting.source.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')" %>
+          <% else %>
+            <%=@planting.collection.source_description%>
+          <% end %>
+        </td>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Collected" %></div>
+      <div class="rowtext"><%= if @planting.collection then link_to @planting.collection.name, '/collections/'+@planting.collection.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')"  end %></div>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Sown" %></div>
+      <div class="rowtext"><%= if @planting.seed then link_to @planting.seed.name, '/seeds/'+@planting.seed.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')"  end %></div>
+   </div>
+ 
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Potted" %></div>
+      <div class="rowtext"><%= if @planting.seedling then link_to @planting.seedling.name, '/seedlings/'+@planting.seedling.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')"  end %></div>
+   </div>
+ 
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Destination" %></div>
+      <div class="rowtext"><%= if @planting.destination then link_to @planting.destination.name, '/destinations/'+@planting.destination.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')"  end %></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Destination description" %></div>
+      <div class="rowtext"><%= @planting.dest_description%></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Location" %></div>
+      <% if @planting.x and @planting.y %>
+        <div class="rowtext"> <%= "NZTM2000: "+@planting.x.round().to_s+", "+@planting.y.round().to_s %><% if @planting.altitude %><%=" (alt: "+@planting.altitude.to_i.to_s+"m)"%> <% end %> </div>
+      <% end %>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Date Planted" %></div>
+      <div class="rowtext"> <%= if @planting.date_planted then @planting.date_planted.strftime('%d/%m/%Y') end%>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Number Planted" %></div>
+      <div class="rowtext"> <%= @planting.number_planted %>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Date Checked" %></div>
+      <div class="rowtext"> <%= if @planting.date_checked then @planting.date_checked.strftime('%d/%m/%Y') end %>
+   </div>
+ 
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Number Survived" %></div>
+      <div class="rowtext"> <%= @planting.number_survived %>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Notes" %></div>
+      <div class="rowtext"> <%= @planting.notes %>
+
+   </div>
+
+
+   <div class="erow">
+      <div class="hrline">
+         <hr noshade size="4">
+      </div>
+   </div>
+
+   <div class="erow">
+      <div class="sectiontitle">History:</div>
+      <%=render '/collections/history_tree'%>
+   </div>
+</div>
+
+<script>
+    <% if @planting.collection %> place_init('<%=@planting.collection.location%>', '', 0); <% end %>
+    <% if @planting.location %> 
+      add_dest('<%=@planting.location%>'); 
+    <% else %>
+      <% if @planting.destination %> add_dest('<%=@planting.destination.location%>'); <% end %>
+    <% end %>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

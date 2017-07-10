@@ -1,0 +1,142 @@
+<script> 
+   document.getElementById("page_status").innerHTML = '';
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <%=  link_to  "Species", '/species', remote: true,  :id => 'species', :onclick => "linkHandler('species')" %>
+     &nbsp;--&gt;&nbsp;
+     <b><%= @species.code %></b>
+     </div>
+   <div id="controls">
+       <% if current_person and current_person.is_modifier %>
+            <%=  link_to "Edit", '/species/'+@species.id.to_s+'/edit', class: "btn btn-small btn-primary", remote: true, :id => 'edit', :onclick => "linkHandler('edit')" %>
+       <% end %>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+   <%= render 'flash' %>
+   <div class="erow">
+      <div class="rowtitle"><%= "Code:" %></div>
+      <div class="rowtext"><%= @species.code %></div>
+   </div>
+   <div class="erow">
+      <div class="rowtitle"><%= "Genus" %></div>
+      <div class="rowtext"><%= @species.genus %></div>
+   </div>
+   <div class="erow">
+      <div class="rowtitle"><%= "Species (sub-species)" %></div>
+      <div class="rowtext"><%= @species.species %></div>
+   </div>
+   <div class="erow">
+      <div class="rowtitle"><%= "Common Name" %></div>
+      <div class="rowtext"><%= @species.common_name %></div>
+   </div>
+   <div class="erow">
+      <div class="rowtitle"><%= "Enabled?" %></div>
+      <div class="textext"><%= if @species.is_active then "Yes" else "No" end %></div>
+   </div>
+   <div class="erow">
+      <div class="hrline">
+         <hr noshade size="4">
+      </div>
+   </div>
+   <div class="erow">
+      <div class="sectiontitle">NZTCS:</div>
+      </br>
+      </br>
+   </div>
+
+   <% if @species.nztcs then 
+        nztcs=[@species.nztcs]
+      else
+        nztcs=Nztcs.find_by_sql "SELECT * from nztcs where name_and_authority LIKE '%"+@species.genus+"%"+@species.species+"%' LIMIT 20"
+      end %>
+
+
+   <table class="places">
+      <tr>
+        <th>Name and Authority</th>
+        <th>Umbrella Category</th>
+        <th>Conservation Status</th>
+        <th>Trend</th>
+        <th>Qualifiers</th>
+      </tr>
+
+      <% nztcs.each do |tc| %>
+        <tr>
+          <td><%=tc.name_and_authority%></td>
+          <td><%=tc.umbrella_category%></td>
+          <td><%=tc.conservation_status%></td>
+          <td><%=tc.trend%></td>
+          <td><%=tc.qualifiers%></td>
+        </tr>
+      <% end %>
+   </table>
+   <div class="erow">
+      <div class="hrline">
+         <hr noshade size="4">
+      </div>
+   </div>
+
+   <div class="erow">
+      <div class="rowtitle"><%= "NZPCN:" %></div>
+      <div class="textext"><%= link_to "http://www.nzpcn.org.nz/flora_search.aspx?scfLatin_Name="+@species.genus+"+"+@species.species, "http://www.nzpcn.org.nz/flora_search.aspx?scfLatin_Name="+@species.genus+"+"+@species.species, target: :_blank %></div>
+   </div>
+
+   <div class="erow">
+      <div class="hrline">
+         <hr noshade size="4">
+      </div>
+   </div>
+   <div class="erow">
+      <div class="sectiontitle">Current stock:</div>
+      </br>
+      </br>
+   </div>
+   <table class="places" id="tree-table">
+     <tr>
+       <th>Id</th>
+       <th>Source Area</th>
+       <th>Date collected</th>
+       <th>No. Seeds</th>
+       <th>No. Germinating</th>
+       <th>No. Seedlings</th>
+    </tr>
+
+    <% @areas.each do |area| 
+      @collections=Collection.find_by_sql [ "SELECT cl.* FROM areas a LEFT JOIN collections cl ON st_contains(a.boundary, cl.location) WHERE a.id = ? and cl.species_code = ? and cl.is_active=true ORDER BY cl.date", area.id, @species.code ]
+      @collections.each do |collection|
+
+        seeds=Seed.find_by_sql [ "SELECT SUM(number_sown) AS number_sown FROM seeds WHERE collection_id = ? AND is_active=true", collection.id.to_s ]
+        if seeds and seeds.first then seed=seeds.first.number_sown end
+        seedlings=Seedling.find_by_sql [ "select SUM(current_stock) as current_stock from seedlings where seed_code LIKE ? AND is_active=true", collection.id.to_s+".%" ]
+        if seedlings and seedlings.first then seedling=seedlings.first.current_stock end
+        plantings=Planting.find_by_sql [ "select SUM(number_planted) as number_planted from plantings where seedling_code LIKE ?", collection.id.to_s+".%" ]
+        if plantings and plantings.first then planting=plantings.first.number_planted end
+      %>
+      <tr>
+        <td><%= if signed_in? then link_to collection.id.to_s, '/collections/'+collection.id.to_s, remote: true, :id => 'collection_link_'+collection.id.to_s, :onclick => "linkHandler('collection_link_"+collection.id.to_s+"')"  else collection.id.to_s end %></td>
+       <td><%= link_to area.name, '/areas/'+area.id.to_s, remote: true, :id => 'area_link_'+collection.id.to_s, :onclick => "linkHandler('area_link_"+collection.id.to_s+"')" %></td>
+        <td><%=if collection.date then collection.date.strftime('%d/%m/%Y') end%></td>
+        <td><%=collection.current_stock%></td>
+        <td><%=seed%></td>
+        <td><%=seedling%></td>
+      </tr>
+      <% end %>
+    <% end %>
+   </table>
+
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

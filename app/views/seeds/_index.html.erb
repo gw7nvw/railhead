@@ -1,0 +1,77 @@
+
+<script>
+   reset_map_controllers();
+   document.getElementById("page_status").innerHTML = '';
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <b>Sown</b>
+     </div>
+   <div id="controls">
+       <% if current_person.is_modifier %>
+            <%=  link_to "Edit Table", '/seeds/editgrid', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('edit')" %>
+            , <%=  link_to "Add row", '/seeds/new', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('add')" %>,
+       <% end %>
+       <%=  link_to "Download", '/seeds.csv', class: "btn btn-small btn-primary"%>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+<div id="right_scroll">
+  <%= render 'flash' %>
+  <table class="places">
+      <tr>
+        <th>
+           ID
+        </th>
+        <th>Species</th>
+        <th>Source</th>
+        <th>Collected</th>
+        <th>Date Sown</th>
+        <th>Number Sown</th>
+        <th>Notes</th>
+        <th style="text-align:center">
+          <%=render :partial => 'filter',  :locals => {:filtername => "active", :formname => "/seeds"} %>
+          Active
+        </th>
+      </tr>
+
+    <% if @seeds then @seeds.each do |seed| %>
+      <tr>
+        <td>
+          <% if current_person.is_modifier %>
+            <span title="Click to edit"><%= link_to image_tag("/assets/pencil_edit.png", :class => 'dock-item'), '/seeds/'+seed.id.to_s+'/edit?referring=index', remote: true, onclick: "linkHandler('editbutton')", id:  "editbutton", alt: "Edit"  %></span>
+          <% end %>
+          <%= link_to seed.seed_code, '/seeds/'+seed.id.to_s, remote: true, :id => 'seed_link_'+seed.id.to_s, :onclick => "linkHandler('seed_link_"+seed.id.to_s+"')" %>
+        </td>
+
+        <td><%=if seed.species then link_to seed.species.name, '/species/'+seed.species.id.to_s, remote: true, :id => 'species_link_'+seed.id.to_s, :onclick => "linkHandler('species_link_"+seed.id.to_s+"')"  end%></td>
+
+        <td><%if seed.source then%>
+           <%=  link_to seed.source.name, '/sources/'+seed.source.id.to_s, remote: true, :id => 'source_link_'+seed.id.to_s, :onclick => "linkHandler('source_link_"+seed.id.to_s+"')" %>
+          <% else %>
+            <div class="hoverover"><span title='<%=if seed.collection then seed.collection.source_description end%>'><%=if seed.collection then seed.collection.source_description[0..15]+"..." end%></span></div>
+          <% end %>
+        </td>
+
+        <td><%=if seed.collection then link_to seed.collection.name, '/collections/'+seed.collection_id.to_s, remote: true, :id => 'collection_link_'+seed.id.to_s, :onclick => "linkHandler('collection_link_"+seed.id.to_s+"')"  end%></td>
+        <td><%=if seed.date_sown then seed.date_sown.strftime('%d/%m/%Y') end%></td>
+        <td><%=seed.number_sown %></td>
+
+        <td><%if seed.notes and seed.notes.length>0 %><div class="hoverover"><span title='<%=seed.notes%>'><%=seed.notes[0..8]+"..."%></span></div><%end%></td>
+
+        <td style="text-align:center"><%= check_box "seed", "is_active", {:checked => seed.is_active, :disabled => true} %></td>
+      </tr>
+    <% end end %>
+  </table>
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

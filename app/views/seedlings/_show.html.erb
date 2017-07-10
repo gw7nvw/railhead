@@ -1,0 +1,100 @@
+<script> 
+   document.getElementById("page_status").innerHTML = '';
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <%=  link_to  "Potted:", '/seedlings', remote: true,  :id => 'seedlings', :onclick => "linkHandler('seedlings')" %>
+     &nbsp;--&gt;&nbsp;
+     <b><%= @seedling.id.to_s %></b>
+     </div>
+   <div id="controls">
+       <% if current_person.is_modifier %>
+            <%=  link_to "Edit", '/seedlings/'+@seedling.id.to_s+'/edit', class: "btn btn-small btn-primary", remote: true, :id => 'edit', :onclick => "linkHandler('edit')" %>
+       <% end %>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+  <%= render 'flash' %>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Seedlings ID:" %></div>
+      <div class="rowtext"><%= @seedling.seedling_code %></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Species" %></div>
+      <div class="rowtext"><%= if @seedling.species then link_to @seedling.species.name, '/species/'+@seedling.species.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')" end %></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Source" %></div>
+        <%if @seedling.source then%>
+           <%=  link_to @seedling.source.name, '/sources/'+@seedling.source.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')" %>
+          <% else %>
+            <%=@seedling.collection.source_description%>
+          <% end %>
+        </td>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Collected" %></div>
+      <div class="rowtext"><%= if @seedling.collection then link_to @seedling.collection.name, '/collections/'+@seedling.collection.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')"  end %></div>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Sown" %></div>
+      <div class="rowtext"><%= if @seedling.seed then link_to @seedling.seed.name, '/seeds/'+@seedling.seed.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')"  end %></div>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Date Potted" %></div>
+      <div class="rowtext"> <%= @seedling.date_potted.strftime('%d/%m/%Y') %>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Number Potted" %></div>
+      <div class="rowtext"> <%= @seedling.number_potted %>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Number Died" %></div>
+      <div class="rowtext"> <%= @seedling.number_died %>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Current Stock" %></div>
+      <div class="rowtext"> <%= @seedling.current_stock %>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Notes" %></div>
+      <div class="rowtext"> <%= @seedling.notes %>
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Current?" %></div>
+      <div class="textext"><%= if @seedling.is_active then "Yes" else "No" end %></div>
+   </div>
+
+   <div class="erow">
+      <div class="hrline">
+         <hr noshade size="4">
+      </div>
+   </div>
+
+   <div class="erow">
+      <div class="sectiontitle">History:</div>
+      <%=render '/collections/history_tree'%>
+   </div>
+</div>
+
+<script>
+    <% if @seedling.seed and @seedling.seed.collection %> place_init('<%=@seedling.seed.collection.location%>', '', 0); <% end %>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

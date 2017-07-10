@@ -1,0 +1,113 @@
+<% if @collection.source then
+     source=@collection.source.name
+   else
+     source=@collection.source_description
+   end
+   if !source then source="" end
+%>
+
+<script> 
+   document.getElementById("page_status").innerHTML = '';
+</script>
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <%=  link_to  "Collected:", '/collections', remote: true,  :id => 'collections', :onclick => "linkHandler('collections')" %>
+     &nbsp;--&gt;&nbsp;
+     <b><%= @collection.id.to_s %></b>
+     </div>
+   <div id="controls">
+       <% if current_person.is_modifier %>
+            <%=  link_to "Edit", '/collections/'+@collection.id.to_s+'/edit', class: "btn btn-small btn-primary", remote: true, :id => 'edit', :onclick => "linkHandler('edit')" %>
+       <% end %>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+<div id="right_scroll">
+   <%= render 'flash' %>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Collection Id:" %></div>
+      <div class="rowtext"><%= @collection.id.to_s %></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Date collected:" %></div>
+      <div class="rowtext"><%= if @collection.date then @collection.date.strftime('%d/%m/%Y') end %></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Collection source" %></div>
+      <div class="rowtext"><%= if @collection.source then link_to @collection.source.name, '/source/'+@collection.source.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')" end %></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Source description" %></div>
+      <div class="rowtext"><%= @collection.source_description%></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Location" %></div>
+      <% if @collection.x and @collection.y %>
+        <div class="rowtext"> <%= "NZTM2000: "+@collection.x.round().to_s+", "+@collection.y.round().to_s %><% if @collection.altitude %><%=" (alt: "+@collection.altitude.to_i.to_s+"m)"%> <% end %> </div>
+      <% end %>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Species" %></div>
+      <div class="rowtext"><%= if @collection.species then link_to @collection.species.name, '/species/'+@collection.species.id.to_s, remote: true, :id => 'specieslink', :onclick => "linkHandler('specieslink')" end %></div>
+
+   </div>
+
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Number of plants sampled" %></div>
+      <div class="rowtext"><%= @collection.no_plants_sampled%></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Number collected" %></div>
+      <div class="rowtext"><%= @collection.no_collected%></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Current stock" %></div>
+      <div class="rowtext"><%= @collection.current_stock%></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Seeds?" %></div>
+      <div class="textext"><%= if @collection.is_seeds then "Yes" else "No" end %></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Cuttings?" %></div>
+      <div class="textext"><%= if @collection.is_cuttings then "Yes" else "No" end %></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Team lead (members)" %></div>
+      <div class="rowtext"><%= if @collection.team_lead then @collection.team_lead.name end%><%= if @collection.team_members then " ("+@collection.team_members+")" end %></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Storage" %></div>
+      <div class="rowtext"><%= @collection.storage%></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Notes" %></div>
+      <div class="rowtext"><%= @collection.notes%></div>
+   </div>
+   <div class="erow" id="email">
+      <div class="rowtitle"><%= "Current?" %></div>
+      <div class="textext"><%= if @collection.is_active then "Yes" else "No" end %></div>
+   </div>
+
+   <div class="erow">
+      <div class="hrline">
+         <hr noshade size="4">
+      </div>
+   </div>
+   <div class="erow">
+      <div class="sectiontitle">History:</div>
+         <%=render '/collections/history_tree'%>
+      </div>
+   </div>
+
+</div>
+<script>
+    place_init('<%=@collection.location%>', '', 0);
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

@@ -1,0 +1,46 @@
+<script>
+   reset_map_controllers();
+   document.getElementById("page_status").innerHTML = '';
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <b>Home</b>
+   </div>
+   <div id="controls">
+      <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+  <%= render 'flash' %>
+  <div style="background-image: url('assets/banner3.jpg'); background-size: cover;padding-bottom: 10px">
+    <h1>Clyde Railhead Nursery</h1>
+  </div>
+
+  <div class="sectiontitle"><br/><br/>Locally-sourced native plants from around Central Otago<br/><br/></div>
+
+  <table class="places">
+    <tr>
+      <th>Area</th>
+    </tr>
+
+    <% @areas=Area.all.order(:name)
+    if @areas then @areas.each do |area| %>
+      <tr>
+        <td>
+          <%= link_to area.name.capitalize, '/areas/'+area.id.to_s, remote: true, :id => 'area_link_'+area.id.to_s, :onclick => "linkHandler('area_link_"+area.id.to_s+"')" %>
+        </td>
+      </tr>
+    <% end end  %>
+  </table>
+
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+}
+</script>
+

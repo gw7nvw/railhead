@@ -1,0 +1,70 @@
+ <div class="fullform">
+   <%= form_for @area, remote: true, :html => {:name => 'areaform'} do |f| %>
+    <div id="actionbar" class="span7" style="margin-top: -32px; margin-left: -6px">
+       <div id="crumbs">
+         <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+         &nbsp;--&gt;&nbsp;
+         <%=  link_to  "Areas:", '/areas', remote: true,  :id => 'areas', :onclick => "linkHandler('areas')" %>
+         &nbsp;--&gt;&nbsp;
+         <%if @area.id%>
+            <b><%=link_to @area.id.to_s, '/areas/'+@area.id.to_s, remote: true, :id => 'area', :onclick => "linkHandler('area')" %>
+            &nbsp;--&gt;&nbsp;
+            <b>Edit</b>
+         <% else %>
+            <b>New</b>
+         <% end %>
+       </div>
+       <div id="controls">
+          <%= f.submit @submit_button, class: "btn btn-small btn-primary" %>
+          <%  if(@submit_button == "Save Changes" and @current_person.is_admin) %>
+            <%= f.submit "Delete", confirm: "Delete area: Are you sure?", class: "btn btn-small btn-primary", name: "delete", id:  "deletebutton", remote: true %>
+          <% end %>
+          <% if params[:referring]=='index'%>
+            <%=  link_to "Cancel", '/areas', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('cancel')" %>
+          <% else %>
+            <%=  link_to "Cancel", '/areas/'+@area.id.to_s, class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('cancel')" %>
+          <% end %>
+          <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+       </div>
+    </div>
+
+    <div id="right_scroll">
+      <%= hidden_field_tag(:referring, @referring) %>
+      <%= render 'flash' %>
+      <%= render 'shared/error_messages' %>
+
+      <div class="sectiontitle">Name</div>
+      <%= f.text_field :name %>
+
+      <div class="sectiontitle">Notes</div>
+      <%= f.text_area :notes, rows: 5 %>
+  
+     <div class="erow">
+           <div class="leftbuttons">
+              <span title="Click to draw property boundary on map">
+                 <img id="boundaryplus" src="/assets/draw.png" onclick="drawBoundary()" width="16" style="display:block">
+              </span>
+
+              <span title="Click to confirm selection">
+                 <img id="boundarytick" src="/assets/tick.png" onclick="boundary_selectNothing()" width="16" style="display:none">
+              </span>
+           </div>
+         <div class="sectiontitle25">Boundary:</div>
+      </div>
+      <%= f.text_field :boundary, :readonly => true%>
+
+    </div>
+  <% end %>
+</div>
+
+<script>
+    areas_layer.setVisibility(true);
+    place_init('', '<%=@area.boundary%>', 0);
+    deactivate_all_click();
+
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

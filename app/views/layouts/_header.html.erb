@@ -1,0 +1,59 @@
+    <header class="navbar navbar-fixed-top navbar-inverse">
+      <div class="navbar-inner" style="font-size:0.8em">
+        <div id="rg-image">
+          <img src='/assets/logo-rg-sml.png'>
+        </div>
+<!--        <div class="container"> -->
+        <div id="our_logo">
+          <%= link_to "Railhead Nursery", root_path, id: "logo", remote: true, :onclick => "linkHandler('logo')" %>
+        </div>
+          <nav>
+            <ul class="nav pull-right" id="menus">
+                <li><%= link_to 'Home', root_path, remote: true, :id => 'home_link', :onclick => "linkHandler('home_link')"  %></li>
+
+
+              <% if signed_in? %>
+                <li><%= link_to "Collected", '/collections',  remote: true,  :id => 'collections_link', :onclick => "linkHandler('collections_link')"  %></li>
+                <li><%= link_to "Sown", '/seeds',  remote: true,  :id => 'seeds_link', :onclick => "linkHandler('seeds_link')"  %></li>
+                <li><%= link_to "Potted", '/seedlings',  remote: true,  :id => 'seedlings_link', :onclick => "linkHandler('seedlings_link')"  %></li>
+                <li><%= link_to "Planted", '/plantings',  remote: true,  :id => 'plantings_link', :onclick => "linkHandler('plqntings_link')"  %></li>
+                <li id="fat-menu" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                     Admin <b class="caret"></b>
+                  </a>
+                  <ul class="dropdown-menu">
+                    <li><%= link_to "Areas", areas_path,  remote: true,  :id => 'areas_link', :onclick => "linkHandler('areas_link')" %></li>
+                    <li><%= link_to "Sources", sources_path,  remote: true,  :id => 'sources_link', :onclick => "linkHandler('sources_link')" %></li>
+                    <li><%= link_to "Destinations", '/destinations',  remote: true,  :id => 'destinationss_link', :onclick => "linkHandler('destinations_link')" %></li>
+                    <li><%= link_to "People", people_path,  remote: true,  :id => 'people_link', :onclick => "linkHandler('people_link')"  %></li>
+                    <li><%= link_to "Species", '/species',  remote: true,  :id => 'species_link', :onclick => "linkHandler('species_link')"  %></li>
+                  </ul>
+                </li>
+                     
+                <li id="fat-menu" class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                   <b>Me</b> <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                  <li><%= link_to "Profile", '/people/'+current_person.id.to_s, remote: true, :id => 'profile_link', :onclick => "linkHandler('profile_link')" %></li>
+                  <li class="divider"></li>
+                  <li>
+                    <%= link_to "Sign out", signout_path, method: "delete" %>
+                  </li>
+                </ul>
+              </li>
+              <% else %>
+                <li><%= link_to 'About', about_path, remote: true, :id => 'about_link', :onclick => "linkHandler('about_link')"  %></li>
+                <li><%= link_to "Areas", areas_path,  remote: true,  :id => 'areas_link', :onclick => "linkHandler('areas_link')" %></li>
+                <li><%= link_to "Species", '/species',  remote: true,  :id => 'species_link', :onclick => "linkHandler('species_link')"  %></li>
+                <li><%= link_to "Sign in", signin_path, remote: true %></li>
+              <% end %>
+              <li>
+                <img src='/assets/print24.png' width="16" id="print_right" style="margin-top:13px;margin-right:5px" onclick="PrintElem('right_panel')">
+              </li>
+            </ul>
+          </nav>
+<!--        </div>-->
+      </div>
+    </header>
+

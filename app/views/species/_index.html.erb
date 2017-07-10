@@ -1,0 +1,59 @@
+<script>
+   reset_map_controllers();
+   document.getElementById("page_status").innerHTML = '';
+</script>
+
+<div id="actionbar" class="span7">
+   <div id="crumbs">
+     <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+     &nbsp;--&gt;&nbsp;
+     <b>Species</b>
+     </div>
+   <div id="controls">
+       <% if current_person and current_person.is_modifier %>
+            <%=  link_to "Edit Table", '/species/editgrid', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('edit')" %>
+            <%=  link_to "Add row", '/species/new', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('add')" %>
+       <% end %>
+       <%=if signed_in? then  link_to "Download", '/species.csv', class: "btn btn-small btn-primary" end %>
+       <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+   </div>
+</div>
+
+<div id="right_scroll">
+  <%= render 'flash' %>
+  <table class="places">
+      <tr>
+        <th>ID</th>
+        <th>Genus</th>
+        <th>Species (sub)</th>
+        <th>Common Name</th>
+        <th style="text-align:center">
+          <%=render :partial => 'filter',  :locals => {:filtername => "active", :formname => "/species"} %>
+          Active
+        </th>
+      </tr>
+
+    <% @species.each do |species| %>
+      <tr>
+        <td>
+          <% if current_person and current_person.is_modifier %>
+            <span title="Click to edit"><%= link_to image_tag("/assets/pencil_edit.png", :class => 'dock-item'), '/species/'+species.id.to_s+'/edit?referring=index', remote: true, onclick: "linkHandler('editbutton')", id:  "editbutton", alt: "Edit"  %></span>
+          <% end %>
+          <%= link_to species.code, '/species/'+species.id.to_s, remote: true, :id => 'species_link_'+species.id.to_s, :onclick => "linkHandler('species_link_"+species.id.to_s+"')" %>
+        </td>
+        <td><%=species.genus%></td>
+        <td><%=species.species%></td>
+        <td><%=species.common_name%></td>
+        <td style="text-align:center"><%= check_box "species", "is_active", {:checked => species.is_active, :disabled => true} %></td>
+      </tr>
+    <% end %>
+  </table>
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+}
+</script>
+

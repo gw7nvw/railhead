@@ -1,0 +1,113 @@
+ <div class="fullform">
+   <%= form_for @destination, remote: true, :html => {:name => 'destinationform'} do |f| %>
+    <div id="actionbar" class="span7" style="margin-top: -32px; margin-left: -6px">
+       <div id="crumbs">
+         <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+         &nbsp;--&gt;&nbsp;
+         <%=  link_to  "Destinations", '/destinations', remote: true,  :id => 'destinations', :onclick => "linkHandler('destinations')" %>
+         &nbsp;--&gt;&nbsp;
+         <%if @destination.id%>
+            <b><%=link_to @destination.id.to_s, '/destinations/'+@destination.id.to_s, remote: true, :id => 'destination', :onclick => "linkHandler('destination')" %>
+            &nbsp;--&gt;&nbsp;
+            <b>Edit</b>
+         <% else %>
+            <b>New</b>
+         <% end %>
+       </div>
+
+       <div id="controls">
+          <%= f.submit @submit_button, class: "btn btn-small btn-primary" %>
+          <%  if(@submit_button == "Save Changes" and @current_person.is_admin) %>
+            <%= f.submit "Delete", confirm: "Delete destination: Are you sure?", class: "btn btn-small btn-primary", name: "delete", id:  "deletebutton", remote: true %>
+          <% end %>
+          <% if params[:referring]=='index'%>
+            <%=  link_to "Cancel", '/destinations', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('cancel')" %>
+          <% else %>
+            <%=  link_to "Cancel", '/destinations/'+@destination.id.to_s, class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('cancel')" %>
+          <% end %>
+          <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+       </div>
+    </div>
+
+    <div id="right_scroll">
+      <%= hidden_field_tag(:referring, @referring) %>
+      <%= render 'flash' %>
+      <%= render 'shared/error_messages' %>
+
+      <div class="sectiontitle">Name</div>
+      <%= f.text_field :name %>
+
+      <div class="sectiontitle">Owner</div>
+      <%= f.text_field :owner %>
+
+      <div class="sectiontitle">Legal Status</div>
+      <%= f.text_field :legal_status %>
+
+      <div class="sectiontitle">Notes</div>
+      <%= f.text_area :notes, rows: 5 %>
+  
+      <div class="sectiontitle">Contact Person</div>
+      <%= collection_select( :destination, :contact_person_id, Person.where(is_destination: true).order(:lastname), :id, :name, {include_blank: '', default: nil}) %>
+
+      <div class="sectiontitle">Property Address</div>
+      <%= f.text_field :property_address1 %>
+      <%= f.text_field :property_address2 %>
+      <%= f.text_field :property_address3 %>
+
+     <div class="erow">
+           <div class="leftbuttons">
+              <span title="Click to draw location on map">
+                 <img id="placeplus" src="/assets/draw-point.png" onclick="selectPoint()" width="16" style="display:block">
+              </span>
+
+              <span title="Click to confirm selection">
+                 <img id="placetick" src="/assets/tick.png" onclick="point_selectNothing()" width="16" style="display:none">
+              </span>
+           </div>
+         <div class="sectiontitle25">Location:</div>
+      </div>
+      <%= f.hidden_field :location, :readonly => true %>
+
+      <%= f.label :projection %>
+      <%= collection_select( :destination, :projection_id, Projection.all.order(:name), :id, :name, {include_blank: '', default: nil}, {}) %>
+
+      <%= f.label :x %>
+      <%= f.text_field :x, :size => 8 %>
+
+      <%= f.label :y %>
+      <%= f.text_field :y, :size => 8 %>
+
+      <div class="sectiontitle">Altitude (leave blank to calculate from map upon save):</div>
+      <%= f.text_field :altitude %>
+
+     <div class="erow">
+           <div class="leftbuttons">
+              <span title="Click to draw property boundary on map">
+                 <img id="boundaryplus" src="/assets/draw.png" onclick="drawBoundary()" width="16" style="display:block">
+              </span>
+
+              <span title="Click to confirm selection">
+                 <img id="boundarytick" src="/assets/tick.png" onclick="boundary_selectNothing()" width="16" style="display:none">
+              </span>
+           </div>
+         <div class="sectiontitle25">Boundary:</div>
+      </div>
+      <%= f.text_field :boundary, :readonly => true%>
+
+      <%= "Active? " %><br/>
+      <%= f.check_box :is_active%><br/><br/>
+    </div>
+  <% end %>
+</div>
+
+<script>
+    place_init('', '<%=@destination.boundary%>', 0);
+    add_dest('<%=@destination.location%>');
+    deactivate_all_click();
+
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

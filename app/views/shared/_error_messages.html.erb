@@ -1,0 +1,21 @@
+<% if @collection and @collection.errors.any? then @item=@collection end %>
+<% if @seed and @seed.errors.any? then @item=@seed end %>
+<% if @seedling and @seedling.errors.any? then @item=@seedling end %>
+<% if @planting and @planting.errors.any? then @item=@planting end %>
+<% if @person and @person.errors.any? then @item=@person end %>
+<% if @source and @source.errors.any? then @item=@source end %>
+<% if @species and @species.errors.any? then @item=@species end %>
+<% if @destination and @destination.errors.any? then @item=@destination end %>
+
+<% if @item and @item.errors.any? %>
+    <div id="error_explanation" class="erow">
+      <div class="alert alert-error">
+        The form contains <%= pluralize(@item.errors.count, "error") %>.
+      </div>
+      <ul>
+      <% @item.errors.full_messages.each do |msg| %>
+        <li>* <%= msg %></li>
+      <% end %>
+      </ul>
+    </div>
+<% end %>

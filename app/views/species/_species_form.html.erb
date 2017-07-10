@@ -1,0 +1,65 @@
+ <div class="fullform">
+  <%= form_for @species, remote: true do |f| %>
+    <div id="actionbar" class="span7" style="margin-top: -32px; margin-left: -6px">
+       <div id="crumbs">
+         <%=link_to "Home", '/', remote: true,  :id => 'home', :onclick => "linkHandler('home')" %>
+         &nbsp;--&gt;&nbsp;
+         <%=  link_to  "Species", '/species', remote: true,  :id => 'species', :onclick => "linkHandler('species')" %>
+         &nbsp;--&gt;&nbsp;
+         <%if @species.id%>
+            <b><%=link_to @species.id.to_s, '/species/'+@species.id.to_s, remote: true, :id => 'species', :onclick => "linkHandler('species')" %>
+            &nbsp;--&gt;&nbsp;
+            <b>Edit</b>
+         <% else %>
+            <b>New</b>
+         <% end %>
+       </div>
+
+       <div id="controls">
+          <%= f.submit @submit_button, class: "btn btn-small btn-primary" %>
+          <%  if(@submit_button == "Save Changes" and @current_person.is_admin) %>
+            <%= f.submit "Delete", confirm: "Delete species: Are you sure?", class: "btn btn-small btn-primary", name: "delete", id:  "deletebutton", remote: true %>
+          <% end %>
+          <% if params[:referring]=='index'%>
+            <%=  link_to "Cancel", '/species', class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('cancel')" %>
+          <% else %>
+            <%=  link_to "Cancel", '/species/'+@species.id.to_s, class: "btn btn-small btn-primary", remote: true, :onclick => "linkHandler('cancel')" %>
+          <% end %>
+          <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
+       </div>
+    </div>
+
+    <div id="right_scroll">
+      <%= hidden_field_tag(:referring, @referring) %>
+
+      <%= render 'flash' %>
+      <%= render 'shared/error_messages' %>
+
+      <div class="sectiontitle">Species Code</div>
+      <%= f.text_field :code %>
+
+      <div class="sectiontitle">Genus</div>
+      <%= f.text_field :genus %>
+  
+      <div class="sectiontitle">Species (sub-species)</div>
+      <%= f.text_field :species %>
+
+      <div class="sectiontitle">Common name</div>
+      <%= f.text_field :common_name %>
+
+      <div class="sectiontitle">NZTCS name and authority</div>
+      <%= collection_select( :species, :nztcs_name, Nztcs.all.order(:name_and_authority), :name_and_authority, :name_and_authority, {include_blank: '', default: nil}, {}) %>
+
+      <div class="rowtitle">Active?</div>
+      <div class="roxtext"><%= f.check_box :is_active%></div>
+    </div>
+  <% end %>
+</div>
+
+<script>
+    if(map_size==0) { 
+       $('#actionbar').removeClass('span7');
+       $('#actionbar').addClass('span12');
+    }
+</script>
+

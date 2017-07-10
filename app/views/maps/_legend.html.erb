@@ -1,0 +1,18 @@
+<div class="erow">
+<p>Coordinate format:</p>
+<%=select_tag("projections", options_from_collection_for_select(@projections, "epsg", "name", @projection), {:onchange => 'updateProjection()', :class=>'body-select'})%>
+</div>
+<div class="erow">
+<p>Route classifiaction:</p>
+<%=select_tag("routeclasses", options_from_collection_for_select(@routeclasses, "name", "description", @cat), {:onchange => 'updateRouteClass()', :class=>'body-select'})%>
+</div>
+<ul style="list-style-type:none;padding:0;margin:0;">
+  <li>
+  <span style="color:#888888"><b>&mdash;&mdash; Not experienced</b></span>
+  </li>
+<% @items.each do |i| %>
+  <li>
+  <span style="color:<%=i.linestyle.linecolor%>"><b>&mdash;&mdash; <%=i.name%></b></span>
+  </li>
+<% end %>
+</ul>

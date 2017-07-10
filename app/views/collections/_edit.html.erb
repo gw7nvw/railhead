@@ -1,0 +1,11 @@
+<% if @collection.source then 
+     source=@collection.source.name 
+   else
+     source=@collection.source_description
+   end
+   if !source then source="" end
+%>
+
+
+<%  @submit_button = "Save Changes" %>
+<%= render 'collection_form' %>
