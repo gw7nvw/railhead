@@ -22,7 +22,7 @@
   <div id="grid_here" style="width: 100%; height: calc(100% - 72px); position: fixed"></div>
 </div>
 <% 
-  collections=Collection.all.order(:id).reverse
+  collections=Collection.where(is_active: true).order(:id).reverse
 %>
 
 <script type="text/javascript" charset="UTF-8">

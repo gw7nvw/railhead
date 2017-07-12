@@ -8,10 +8,14 @@ class CollectionsController < ApplicationController
 
 
   def index_prep
-    whereclause="true"
+    whereclause="is_active is true"
     if params[:filter] then
       @filter=params[:filter]
-      whereclause="is_"+@filter+" is true"
+      if @filter=="active" then 
+        whereclause="true"
+      else
+        whereclause="is_"+@filter+" is true"
+      end
     end
 
     @collections=Collection.find_by_sql [ 'select * from collections where '+whereclause+' order by id DESC' ]
@@ -196,9 +200,9 @@ def db_action
         @collection.source_id = source_id   
         @collection.source_description = source_description
         @collection.date = date   
-        @collection.x = x
-        @collection.y = y
-        @collection.altitude = altitude  
+        if x!="" then @collection.x = x else @collection.x = nil end
+        if y!="" then @collection.y = y else @collection.y = nil end
+        @collection.altitude = altitude 
         @collection.projection_id = projection_id  
         @collection.no_plants_sampled = no_plants_sampled  
         @collection.no_collected = no_collected  
@@ -212,7 +216,7 @@ def db_action
         @collection.notes = notes
         @collection.is_active = is_active
         if need_convert then convert_location_params() end
-        if projection_id!=4326 then  
+        if projection_id!=4326 and @collection.x and @collection.y then  
           @collection.x = @collection.x.to_i
           @collection.y = @collection.y.to_i
         end  
@@ -228,12 +232,28 @@ end
   end
 
   def convert_location_params
-   if(@collection.x and @collection.y and @collection.projection)
-       if @collection.projection.id!=4326 then 
-           x=x.to_i
-           y=y.to_i
+   if(@collection.x and @collection.y  and @collection.projection)
+
+       # convert to NZTM2000 (EPSG4326) for display 
+       if @collection.projection_id != 2193 then
+         fromproj4s= @collection.projection.proj4
+         toproj4s=  Projection.find_by_id(2193).proj4
+
+         fromproj=RGeo::CoordSys::Proj4.new(fromproj4s)
+         toproj=RGeo::CoordSys::Proj4.new(toproj4s)
+
+         xyarr=RGeo::CoordSys::Proj4::transform_coords(fromproj,toproj,@collection.x,@collection.y)
+
+         @collection.x=xyarr[0]
+         @collection.y=xyarr[1]
+         @collection.projection_id=2193
        end
-       # convert to WGS84 (EPSG4326) fro database 
+       if @collection.projection_id!=4326 then 
+           @collection.x=@collection.x.to_i
+           @collection.y=@collection.y.to_i
+       end
+
+       # convert to WGS84 (EPSG4326) for database 
        fromproj4s= @collection.projection.proj4
        toproj4s=  Projection.find_by_id(4326).proj4
 
@@ -244,21 +264,8 @@ end
 
        params[:location]=xyarr[0].to_s+" "+xyarr[1].to_s
        @collection.location='POINT('+params[:location]+')'
-
-       # convert to NZTM2000 (EPSG4326) for display 
-       fromproj4s= @collection.projection.proj4
-       toproj4s=  Projection.find_by_id(2193).proj4
-
-       fromproj=RGeo::CoordSys::Proj4.new(fromproj4s)
-       toproj=RGeo::CoordSys::Proj4.new(toproj4s)
-
-       xyarr=RGeo::CoordSys::Proj4::transform_coords(fromproj,toproj,@collection.x,@collection.y)
-
-       @collection.x=xyarr[0]
-       @collection.y=xyarr[1]
-       @collection.projection_id=2193
-
-       #if altitude is not entered, calculate it from map 
+   
+      #if altitude is not entered, calculate it from map 
       if !@collection.altitude or @collection.altitude.to_i == 0 then
          #get alt from map if it is blank or 0
          altArr=Dem30.find_by_sql ["
@@ -270,6 +277,8 @@ end
 
          @collection.altitude=altArr.first.try(:rid).to_i
        end
+    else 
+       @collection.location=nil
     end
   end
 

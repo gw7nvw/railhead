@@ -19,7 +19,7 @@ function update_seed_code() {
          <%=  link_to  "Potted:", '/seedlings', remote: true,  :id => 'seedlings', :onclick => "linkHandler('seedlings')" %>
          &nbsp;--&gt;&nbsp;
          <%if @seedling.id%>
-            <b><%=link_to @seedling.id.to_s, '/seedlings/'+@seedling.id.to_s, remote: true, :id => 'seedling', :onclick => "linkHandler('seedling')" %>
+            <b><%=link_to @seedling.seedling_code, '/seedlings/'+@seedling.id.to_s, remote: true, :id => 'seedling', :onclick => "linkHandler('seedling')" %>
             &nbsp;--&gt;&nbsp;
             <b>Edit</b>
          <% else %>
@@ -46,7 +46,7 @@ function update_seed_code() {
       <%= render 'shared/error_messages' %>
 
       <div class="sectiontitle">Source seed stock</div>
-      <%= collection_select( :seedling, :seed_code, Seed.where(is_active: true).order(:seed_code).reverse, :seed_code, :description, {include_blank: '', default: nil}, onchange: 'update_seed_code()') %>
+      <%= collection_select( :seedling, :seed_code, Seed.where(is_active: true).order("string_to_array(seed_code, '.')::int[]").reverse, :seed_code, :description, {include_blank: '', default: nil}, onchange: 'update_seed_code()') %>
 
       <div class="sectiontitle">Seedling ID (confirmed on save)</div>
       <%= f.text_field :seedling_code, readonly: true %>

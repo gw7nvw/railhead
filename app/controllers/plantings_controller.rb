@@ -8,7 +8,8 @@ class PlantingsController < ApplicationController
       whereclause="is_"+@filter+" is true"
     end
 
-    @plantings=Planting.find_by_sql [ 'select * from plantings where '+whereclause+' order by planting_code DESC' ]
+    @plantings=Planting.find_by_sql [ "select * from plantings where "+whereclause+" order by string_to_array(planting_code, '.')::int[] DESC" ]
+
   end
   def index
     index_prep()
@@ -134,7 +135,7 @@ end
 #editgrid handlers
 
   def data
-            plantings = Planting.all.order(:planting_code).reverse
+            plantings = Planting.find_by_sql [ "select * from plantings order by string_to_array(planting_code, '.')::int[] DESC" ]
 
             render :json => {
                  :total_count => plantings.length,
@@ -210,8 +211,8 @@ def db_action
         @planting.seedling_code = seedling_code
         @planting.destination_id = destination_id
         @planting.dest_description = dest_description
-        @planting.x = x
-        @planting.y = y
+        if x!="" then @planting.x = x else @planting.x = nil end
+        if y!="" then @planting.y = y else @planting.y = nil end
         @planting.altitude = altitude
         @planting.projection_id = projection_id
         @planting.number_planted = number_planted
@@ -219,7 +220,7 @@ def db_action
         @planting.number_survived = number_survived
         @planting.notes = notes
         if need_convert then convert_location_params() end
-        if projection_id!=4326 then
+        if projection_id!=4326 and @planting.x and @planting.y then
           @planting.x = @planting.x.to_i
           @planting.y = @planting.y.to_i
         end
@@ -280,6 +281,8 @@ end
 
          @planting.altitude=altArr.first.try(:rid).to_i
        end
+    else
+       @planting.location=nil
     end
   end
 

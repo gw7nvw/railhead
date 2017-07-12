@@ -9,12 +9,13 @@
      &nbsp;--&gt;&nbsp;
      <%=  link_to  "Sown:", '/seeds', remote: true,  :id => 'seeds', :onclick => "linkHandler('seeds')" %>
      &nbsp;--&gt;&nbsp;
-     <b><%= @seed.id.to_s %></b>
+     <b><%= @seed.seed_code %></b>
      </div>
    <div id="controls">
        <% if current_person.is_modifier %>
             <%=  link_to "Edit", '/seeds/'+@seed.id.to_s+'/edit', class: "btn btn-small btn-primary", remote: true, :id => 'edit', :onclick => "linkHandler('edit')" %>
        <% end %>
+       <%=  link_to "Index", "/seeds", class: "btn btn-small btn-primary", remote: true,  :id => 'index', :onclick => "linkHandler('index')" %>
        <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
    </div>
 </div>
@@ -52,7 +53,7 @@
    </div>
 
    <div class="erow" id="email">
-      <div class="rowtitle"><%= "Current?" %></div>
+      <div class="rowtitle"><%= "Active?" %></div>
       <div class="textext"><%= if @seed.is_active then "Yes" else "No" end %></div>
    </div>
 
