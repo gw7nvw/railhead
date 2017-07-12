@@ -22,7 +22,7 @@
 </div>
 
 <% 
-  seeds=Seed.all.order(:seed_code).reverse
+  seeds=Seed.where(is_active: true).order("string_to_array(seed_code, '.')::int[]").reverse
 %>
 
 <script type="text/javascript" charset="UTF-8">

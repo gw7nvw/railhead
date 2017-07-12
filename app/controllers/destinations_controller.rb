@@ -175,14 +175,14 @@ def db_action
         @destination.property_address1 = property_address1
         @destination.property_address2 = property_address2
         @destination.property_address3 = property_address3
-        @destination.x = x
-        @destination.y = y
+        if x!="" then @destination.x = x else @destination.x = nil end
+        if y!="" then @destination.y = y else @destination.y = nil end
         @destination.altitude = altitude
         @destination.projection_id = projection_id
         @destination.notes = notes
         @destination.is_active = is_active
         if need_convert then convert_location_params() end
-        if projection_id!=4326 then
+        if projection_id!=4326 and @destination.x and @destination.y then
           @destination.x = @destination.x.to_i
           @destination.y = @destination.y.to_i
         end
@@ -240,6 +240,8 @@ private
 
          @destination.altitude=altArr.first.try(:rid).to_i
        end
+    else
+       @destination.location=nil
     end
   end
 

@@ -20,7 +20,7 @@ function update_collection_id() {
          <%=  link_to  "Sown:", '/seeds', remote: true,  :id => 'seeds', :onclick => "linkHandler('seeds')" %>
          &nbsp;--&gt;&nbsp;
          <%if @seed.id%>
-            <b><%=link_to @seed.id.to_s, '/seeds/'+@seed.id.to_s, remote: true, :id => 'seed', :onclick => "linkHandler('seed')" %>
+            <b><%=link_to @seed.seed_code, '/seeds/'+@seed.id.to_s, remote: true, :id => 'seed', :onclick => "linkHandler('seed')" %>
             &nbsp;--&gt;&nbsp;
             <b>Edit</b>
          <% else %>

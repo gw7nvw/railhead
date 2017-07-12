@@ -3,13 +3,17 @@ class SeedsController < ApplicationController
   before_action :signed_in_person
 
   def index_prep
-    whereclause="true"
+    whereclause="is_active is true"
     if params[:filter] then
       @filter=params[:filter]
-      whereclause="is_"+@filter+" is true"
+      if @filter=="active" then
+        whereclause="true"
+      else
+        whereclause="is_"+@filter+" is true"
+      end
     end
 
-    @seeds=Seed.find_by_sql [ 'select * from seeds where '+whereclause+' order by seed_code DESC' ]
+    @seeds=Seed.find_by_sql [ 'select * from seeds where '+whereclause+' order by seed_code::float DESC' ]
   end
   def index
     index_prep()
@@ -47,6 +51,7 @@ class SeedsController < ApplicationController
       @seed = Seed.new(seed_params)
       @seed.createdBy_id=current_person.id
       subcode=1
+      old_code=@seed.seed_code
       while (Seed.find_by_sql [ "select * from seeds where seed_code='"+@seed.seed_code+subcode.to_s+"'" ]).count>0
         subcode+=1
       end
@@ -63,6 +68,7 @@ class SeedsController < ApplicationController
           end
 
       else
+          @seed.seed_code=old_code
           render 'new'
       end
     else
@@ -131,7 +137,7 @@ end
 #editgrid handlers
 
   def data
-            seeds = Seed.all.order(:seed_code).reverse
+            seeds = Seed.find_by_sql [ 'select * from seeds order by seed_code::float DESC' ]
 
             render :json => {
                  :total_count => seeds.length,

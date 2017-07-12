@@ -8,12 +8,13 @@
      &nbsp;--&gt;&nbsp;
      <%=  link_to  "Potted:", '/seedlings', remote: true,  :id => 'seedlings', :onclick => "linkHandler('seedlings')" %>
      &nbsp;--&gt;&nbsp;
-     <b><%= @seedling.id.to_s %></b>
+     <b><%= @seedling.seedling_code %></b>
      </div>
    <div id="controls">
        <% if current_person.is_modifier %>
             <%=  link_to "Edit", '/seedlings/'+@seedling.id.to_s+'/edit', class: "btn btn-small btn-primary", remote: true, :id => 'edit', :onclick => "linkHandler('edit')" %>
        <% end %>
+       <%=  link_to "Index", "/seedlings", class: "btn btn-small btn-primary", remote: true,  :id => 'index', :onclick => "linkHandler('index')" %>
        <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
    </div>
 </div>

@@ -2,13 +2,17 @@ class SeedlingsController < ApplicationController
   before_action :signed_in_person
 
   def index_prep
-    whereclause="true"
+    whereclause="is_active is true"
     if params[:filter] then
       @filter=params[:filter]
-      whereclause="is_"+@filter+" is true"
+      if @filter=="active" then
+        whereclause="true"
+      else
+        whereclause="is_"+@filter+" is true"
+      end
     end
 
-    @seedlings=Seedling.find_by_sql [ 'select * from seedlings where '+whereclause+' order by seedling_code DESC' ]
+    @seedlings=Seedling.find_by_sql [ "select * from seedlings where "+whereclause+" order by string_to_array(seedling_code, '.')::int[] DESC" ]
   end
   def index
     index_prep()
@@ -46,6 +50,7 @@ class SeedlingsController < ApplicationController
       @seedling = Seedling.new(seedling_params)
       @seedling.createdBy_id=current_person.id
       subcode=1
+      old_code=@seedling.seedling_code
       while (Seedling.find_by_sql [ "select * from seedlings where seedling_code='"+@seedling.seedling_code+subcode.to_s+"'" ]).count>0
         subcode+=1
       end
@@ -62,6 +67,7 @@ class SeedlingsController < ApplicationController
           end
 
       else
+          @seedling.seedling_code=old_code
           render 'new'
       end
     else
@@ -127,7 +133,8 @@ end
 #editgrid handlers
 
   def data
-            seedlings = Seedling.all.order(:seedling_code).reverse
+            seedlings = Seedling.find_by_sql [ "select * from seedlings order by string_to_array(seedling_code, '.')::int[] DESC" ]
+
 
             render :json => {
                  :total_count => seedlings.length,
