@@ -2,7 +2,11 @@ class Collection < ActiveRecord::Base
 
 #  validates :date, presence: true
   validates :species_code, presence: true
+<<<<<<< HEAD
   validates :id, uniqueness: { :allow_blank => true }
+=======
+
+>>>>>>> 04e3b54f00a836087ce94435446de53584b7c0bd
   belongs_to :projection
   belongs_to :createdBy, class_name: "Person"
   belongs_to :team_lead, class_name: "Person"
