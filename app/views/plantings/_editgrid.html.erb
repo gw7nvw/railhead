@@ -22,7 +22,7 @@
 </div>
 
 <% 
-  seedlings=Seedling.where(:is_active => true).order(:seedling_code).reverse
+  seedlings=Seedling.where(:is_active => true).order("string_to_array(seedling_code, '.')::int[] DESC")
   destinations=Destination.where(:is_active => true).order(:name)
   projections=Projection.all
 %>

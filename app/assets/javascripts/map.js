@@ -384,7 +384,7 @@ function plantings_layer_add() {
     plantings_layer = new OpenLayers.Layer.Vector("Plantings", {
                     strategies: [new OpenLayers.Strategy.BBOX()],
                     protocol: new OpenLayers.Protocol.WFS({
-                        url:  "http://wharncliffe.co.nz/cgi-bin/mapserv?map=/var/www/html/rh_maps/railhead.map",
+                        url:  "http://nursery.clyde.nz/cgi-bin/mapserv?map=/var/www/html/rh_maps/railhead.map",
                         featureType: "plantings",
                         extractAttributes: true
                     }),
@@ -422,7 +422,7 @@ function collections_layer_add() {
     collections_layer = new OpenLayers.Layer.Vector("Collections", {
                     strategies: [new OpenLayers.Strategy.BBOX()],
                     protocol: new OpenLayers.Protocol.WFS({
-                        url:  "http://wharncliffe.co.nz/cgi-bin/mapserv?map=/var/www/html/rh_maps/railhead.map",
+                        url:  "http://nursery.clyde.nz/cgi-bin/mapserv?map=/var/www/html/rh_maps/railhead.map",
                         featureType: "collections",
                         extractAttributes: true
                     }),
@@ -505,7 +505,7 @@ function destinations_layer_add() {
     destinations_layer = new OpenLayers.Layer.Vector("destinations", {
                     strategies: [new OpenLayers.Strategy.BBOX()],
                     protocol: new OpenLayers.Protocol.WFS({
-                        url:  "http://routeguides.co.nz/cgi-bin/mapserv?map=/var/www/html/rh_maps/railhead.map",
+                        url:  "http://nursery.clyde.nz/cgi-bin/mapserv?map=/var/www/html/rh_maps/railhead.map",
                         featureType: "destinations",
                         extractAttributes: true
                     }),
@@ -541,7 +541,7 @@ function areas_layer_add() {
     areas_layer = new OpenLayers.Layer.Vector("areas", {
                     strategies: [new OpenLayers.Strategy.BBOX()],
                     protocol: new OpenLayers.Protocol.WFS({
-                        url:  "http://routeguides.co.nz/cgi-bin/mapserv?map=/var/www/html/rh_maps/railhead.map",
+                        url:  "http://nursery.clyde.nz/cgi-bin/mapserv?map=/var/www/html/rh_maps/railhead.map",
                         featureType: "areas",
                         extractAttributes: true
                     }),
@@ -577,7 +577,7 @@ function sources_layer_add() {
     sources_layer = new OpenLayers.Layer.Vector("sources", {
                     strategies: [new OpenLayers.Strategy.BBOX()],
                     protocol: new OpenLayers.Protocol.WFS({
-                        url:  "http://routeguides.co.nz/cgi-bin/mapserv?map=/var/www/html/rh_maps/railhead.map",
+                        url:  "http://nursery.clyde.nz/cgi-bin/mapserv?map=/var/www/html/rh_maps/railhead.map",
                         featureType: "sources",
                         extractAttributes: true
                     }),
@@ -706,6 +706,8 @@ function add_click_to_select_all_controller() {
       vectorLayer.destroyFeatures();
       sources_layer.setVisibility(false);
       destinations_layer.setVisibility(false);
+      collections_layer.setVisibility(false);
+      plantings_layer.setVisibility(false);
 
    }
  }

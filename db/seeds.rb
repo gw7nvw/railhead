@@ -74,6 +74,13 @@ Species.create(code: "RaoAus", genus:"Raoulia", species: "australis", common_nam
 Species.create(code: "MyrDiv", genus:"Myrsine", species: "divaricata", common_name: "weeping mapou", is_active: true)
 Species.create(code: "OleFim", genus:"Olearia", species: "fimbriata", common_name: "", is_active: true)
 Species.create(code: "OleFra", genus:"Olearia", species: "fragrantissima", common_name: "fragrant tree daisy ", is_active: true)
+Species.create(code: "PodNiv", genus:"Podocarpus", species: "nivalis", common_name: "snow totara", is_active: true) 
+Species.create(code: "PodLae", genus:"Podocarpus", species: "laetus", common_name: "Hall's Totara", is_active: true) 
+Species.create(code: "HalBid", genus:"Halocarpus", species: "bidwilli", common_name: "bog pine", is_active: true) 
+Species.create(code: "PhyAlp", genus:"Phyllocladus", species: "alpinus", common_name: "celery pine", is_active: true) 
+Species.create(code: "LopMen", genus:"Lophozonia", species: "menzeisii", common_name: "silver beech", is_active: true) 
+Species.create(code: "CleMar", genus:"Clematis", species: "marata", common_name: "Clematis", is_active: true) 
+Species.create(code: "ParCap", genus:"Parsonsia", species: "capsularis", common_name: "NZ Jasmine", is_active: true) 
 
 
 Maplayer.create(name: "NZTM Topo 2009", baseurl: "http://au.mapspast.org.nz/topo50/", basemap: "mapspast", minzoom: 0, maxzoom: 10, imagetype: "png")

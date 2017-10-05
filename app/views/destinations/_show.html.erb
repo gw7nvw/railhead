@@ -14,6 +14,7 @@
        <% if current_person.is_modifier %>
             <%=  link_to "Edit", '/destinations/'+@destination.id.to_s+'/edit', class: "btn btn-small btn-primary", remote: true, :id => 'edit', :onclick => "linkHandler('edit')" %>
        <% end %>
+       <%=  link_to "Index", "/destinations", class: "btn btn-small btn-primary", remote: true,  :id => 'index', :onclick => "linkHandler('index')" %>
        <%=  link_to "Show/Hide Map", "#", class: "btn btn-small btn-primary",   :onclick => "toggle_map(); return false;"%>
    </div>
 </div>

@@ -53,6 +53,7 @@ class PlantingsController < ApplicationController
       @planting = Planting.new(planting_params)
       convert_location_params()
       @planting.createdBy_id=current_person.id
+      old_code=@planting.planting_code
       subcode=1
       while (Planting.find_by_sql [ "select * from plantings where planting_code='"+@planting.planting_code+subcode.to_s+"'" ]).count>0
         subcode+=1
@@ -70,6 +71,7 @@ class PlantingsController < ApplicationController
           end
 
       else
+          @planting.planting_code=old_code
           render 'new'
       end
     else

@@ -3,7 +3,14 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <script src="/assets/OpenLayers.js"></script>
+<script>
+if( /Android|webOS|iPhone|iPod|iPad|BlackBerry/i.test(navigator.userAgent))
+{
+ document.write('<script type="text/javascript" src="/assets/OpenLayers-mobile.js"><\/script>');
+} else {
+ document.write('<script type="text/javascript" src="/assets/OpenLayers.js"><\/script>');
+}
+</script>
 
     <script>
       <% if @zoomlevel and @zoomlevel.to_i>=5 and @zoomlevel.to_i<=15%> var defzoom=<%=@zoomlevel%> <% end %>

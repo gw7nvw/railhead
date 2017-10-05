@@ -37,6 +37,7 @@ class SpeciesController < ApplicationController
  def create
   if signed_in? and current_person.is_modifier then
     @species = Species.new(species_params)
+    if @species.nztcs_name=="" then @species.nztcs_name=nil end
     @species.createdBy_id=current_person.id
 
     if @species.save
@@ -45,6 +46,7 @@ class SpeciesController < ApplicationController
           index_prep()
           render 'index'
         else
+          @areas=Area.all
           render 'show'
         end
     else
@@ -81,6 +83,7 @@ def update
 
       @species = Species.find_by_id(params[:id])
       @species.assign_attributes(species_params)
+      if @species.nztcs_name=="" then @species.nztcs_name=nil end
       @species.createdBy_id=current_person.id
 
       if @species.save 
@@ -91,6 +94,7 @@ def update
           index_prep()
           render 'index'
         else
+          @areas=Area.all
           render 'show'
         end
       else
