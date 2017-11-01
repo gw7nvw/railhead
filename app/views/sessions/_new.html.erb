@@ -31,7 +31,7 @@
       <%= f.password_field :upassword %>
       <%= f.hidden_field :password %>
     </div>
-    This form uses <%= link_to "RSA encryption", "https://en.wikipedia.org/wiki/RSA_Security" %> to protect your information
+    This form uses <%= link_to "RSA encryption", "https://en.wikipedia.org/wiki/RSA_(cryptosystem)" %> to protect your information
   <% end %>
   <%= hidden_field_tag :public_modulus, @public_modulus %>
   <%= hidden_field_tag :public_exponent, @public_exponent %>

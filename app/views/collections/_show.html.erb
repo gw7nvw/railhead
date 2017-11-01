@@ -37,7 +37,7 @@
    </div>
    <div class="erow" id="email">
       <div class="rowtitle"><%= "Collection source" %></div>
-      <div class="rowtext"><%= if @collection.source then link_to @collection.source.name, '/source/'+@collection.source.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')" end %></div>
+      <div class="rowtext"><%= if @collection.source then link_to @collection.source.name, '/sources/'+@collection.source.id.to_s, remote: true, :id => 'source_link', :onclick => "linkHandler('source_link')" end %></div>
    </div>
    <div class="erow" id="email">
       <div class="rowtitle"><%= "Source description" %></div>

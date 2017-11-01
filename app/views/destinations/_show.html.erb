@@ -60,6 +60,22 @@
       <div class="rowtitle"><%= "Enabled?" %></div>
       <div class="textext"><%= if @destination.is_active then "Yes" else "No" end %></div>
    </div>
+
+   <div class="erow">
+      <div class="hrline">
+         <hr noshade size="4">
+      </div>
+   </div>
+   <% plantings = Planting.find_by_sql [ " select * from plantings where destination_id = ?",@destination.id.to_s ] %>
+   <% @collections = Collection.find_all_by_id(plantings.map{|p| p.collection.id}).reverse %>
+
+
+   <div class="erow">
+      <div class="sectiontitle">Planted here:</div>
+         <%=render '/sources/association_tree'%>
+      </div>
+   </div>
+
 </div>
 
 <script>

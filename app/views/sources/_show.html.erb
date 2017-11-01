@@ -48,6 +48,20 @@
       <div class="rowtitle"><%= "Enabled?" %></div>
       <div class="textext"><%= if @source.is_active then "Yes" else "No" end %></div>
    </div>
+
+   <div class="erow">
+      <div class="hrline">
+         <hr noshade size="4">
+      </div>
+   </div>
+   <% @collections = Collection.find_by_sql [ " select * from collections where source_id = ? order by date DESC",@source.id.to_s ] %>
+
+   <div class="erow">
+      <div class="sectiontitle">Plants sourced here:</div>
+         <%=render 'association_tree'%>
+      </div>
+   </div>
+
 </div>
 
 <script>
